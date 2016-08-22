@@ -1,0 +1,3 @@
+window.ok({
+  name: 'yiminghe',
+});
