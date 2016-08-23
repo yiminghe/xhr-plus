@@ -1,19 +1,20 @@
-import utils from './utils';
 import IO from './base';
 import querystring from 'modulex-querystring/lib/querystring';
 import assign from 'object-assign';
 import FormSerializer from './form-serializer';
+
 const slice = Array.prototype.slice;
 
 IO.addPreprocessor('start', (e) => {
   const { FormData } = window;
   const io = e.io;
   let d;
-  let dataType;
+  let type;
   let formParam;
   let data;
   const c = io.config;
   const form = c.form;
+  const useIframeUpload = c.useIframeUpload || !FormData;
 
   // serialize form if needed
   if (form) {
@@ -25,7 +26,7 @@ IO.addPreprocessor('start', (e) => {
       const input = inputs[i];
       if (input.type.toLowerCase() === 'file') {
         isUpload = true;
-        if (!FormData) {
+        if (useIframeUpload) {
           break;
         }
         const selected = slice.call(input.files, 0);
@@ -33,20 +34,19 @@ IO.addPreprocessor('start', (e) => {
       }
     }
 
-    if (isUpload && FormData) {
+    if (isUpload && !useIframeUpload) {
       c.files = c.files || {};
       assign(c.files, files);
       // browser set contentType automatically for FileData
       delete c.contentType;
     }
-
     // 上传有其他方法
-    if (!isUpload || FormData) {
+    if (!isUpload || !useIframeUpload) {
       // when get need encode
       // when FormData exists, only collect non-file type input
       formParam = FormSerializer.getFormData(form);
       if (c.hasContent) {
-        formParam = querystring.stringify(formParam, undefined, undefined, c.serializeArray);
+        formParam = querystring.stringify(formParam, undefined, undefined, !c.traditional);
         if (data) {
           c.data += `&${formParam}`;
         } else {
@@ -58,14 +58,14 @@ IO.addPreprocessor('start', (e) => {
       }
     } else {
       // for old-ie
-      dataType = c.dataType;
-      d = dataType[0];
+      type = c.type;
+      d = type[0];
       if (d === '*') {
         d = 'text';
       }
-      dataType.length = 2;
-      dataType[0] = 'iframe';
-      dataType[1] = d;
+      type.length = 2;
+      type[0] = 'iframe';
+      type[1] = d;
     }
   }
 });

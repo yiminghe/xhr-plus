@@ -14,10 +14,10 @@ const locationUrl = locationHref && url.parse(locationHref);
 const isLocal = rlocalProtocol.test(locationUrl.protocol);
 const transports = {};
 const defaultConfig = {
-  type: 'GET',
+  method: 'GET',
   contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
   async: true,
-  serializeArray: true,
+  traditional: false,
   processData: true,
   accepts: {
     xml: 'application/xml, text/xml',
@@ -46,7 +46,7 @@ const defaultConfig = {
 
 defaultConfig.converters.html = defaultConfig.converters.text;
 
-function setUpConfig(c) {
+function ajaxSetup(c) {
   // deep mix,exclude context!
   const context = c.context;
   delete c.context;
@@ -57,8 +57,8 @@ function setUpConfig(c) {
 
   const data = c.data;
   let uri;
+  let method = c.method;
   let type = c.type;
-  let dataType = c.dataType;
 
   uri = c.uri = url.parse(url.resolve(locationHref, c.url), true);
 
@@ -69,18 +69,18 @@ function setUpConfig(c) {
     c.crossDomain = !(uri.protocol === locationUrl.protocol && uri.host === locationUrl.host);
   }
 
-  type = c.type = type.toUpperCase();
-  c.hasContent = !rnoContent.test(type);
+  method = c.method = method.toUpperCase();
+  c.hasContent = !rnoContent.test(method);
 
   if (c.processData && typeof data !== 'string') {
     // normalize to string
-    c.data = querystring.stringify(data, undefined, undefined, c.serializeArray);
+    c.data = querystring.stringify(data, undefined, undefined, !c.traditional);
   }
 
   // 数据类型处理链，一步步将前面的数据类型转化成最后一个
-  dataType = c.dataType = (dataType || '*').trim().split(rspace);
+  type = c.type = (type || '*').trim().split(rspace);
 
-  if (!('cache' in c) && ['script', 'jsonp'].indexOf(dataType[0]) !== -1) {
+  if (!('cache' in c) && ['script', 'jsonp'].indexOf(type[0]) !== -1) {
     c.cache = false;
   }
 
@@ -104,7 +104,7 @@ function setUpConfig(c) {
  * @cfg {String} url
  * request destination
  *
- * @cfg {String} type request type.
+ * @cfg {String} method request method.
  * eg: 'get','post'
  * Default to: 'get'
  *
@@ -113,30 +113,30 @@ function setUpConfig(c) {
  * Data will always be transmitted to the server using UTF-8 charset
  *
  * @cfg {Object} accepts
- * Default to: depends on DataType.
+ * Default to: depends on type.
  * The content type sent in request header that tells the server
  * what kind of response it will accept in return.
- * It is recommended to do so once in the {@link IO#method-setupConfig}
+ * It is recommended to do so once in the {@link IO#method-ajaxSetup}
  *
  * @cfg {Boolean} async
  * Default to: true
  * whether request is sent asynchronously
  *
  * @cfg {Boolean} cache
- * Default to: true ,false for dataType 'script' and 'jsonp'
+ * Default to: true ,false for type 'script' and 'jsonp'
  * if set false,will append _ksTs=Date.now() to url automatically
  *
  * @cfg {Object} contents
- * a name-regexp map to determine request data's dataType
- * It is recommended to do so once in the {@link IO#method-setupConfig}
+ * a name-regexp map to determine request data's type
+ * It is recommended to do so once in the {@link IO#method-ajaxSetup}
  *
  * @cfg {Object} context
  * specify the context of this request 's callback (success,error,complete)
  *
  * @cfg {Object} converters
  * Default to: {text:{json:Json.parse,html:mirror,text:mirror,xml:parseXML}}
- * specified how to transform one dataType to another dataType
- * It is recommended to do so once in the {@link IO#method-setupConfig}
+ * specified how to transform one type to another type
+ * It is recommended to do so once in the {@link IO#method-ajaxSetup}
  *
  * @cfg {Boolean} crossDomain
  * Default to: false for same-domain request,true for cross-domain request
@@ -145,9 +145,9 @@ function setUpConfig(c) {
  *
  * @cfg {Object} data
  * Data sent to server.if processData is true,data will be serialized to String type.
- * if value is an Array, serialization will be based on serializeArray.
+ * if value is an Array, serialization will be based on traditional.
  *
- * @cfg {String} dataType
+ * @cfg {String} type
  * return data as a specified type
  * Default to: Based on server contentType header
  * 'xml' : a XML document
@@ -182,7 +182,7 @@ function setUpConfig(c) {
  * whether data will be serialized as String
  *
  * @cfg {String} scriptCharset
- * only for dataType 'jsonp' and 'script' and 'get' type.
+ * only for type 'jsonp' and 'script' and 'get' type.
  * force the script to certain charset.
  *
  * @cfg {Function} beforeSend
@@ -200,7 +200,7 @@ function setUpConfig(c) {
  * success(data,textStatus,xhr)
  * callback function called if the request succeeds.this function has 3 arguments
  *
- * 1. data returned from this request with type specified by dataType
+ * 1. data returned from this request with type specified by type
  *
  * 2. status of this request with type String
  *
@@ -230,8 +230,8 @@ function setUpConfig(c) {
  * @cfg {Number} timeout
  * Set a timeout(in seconds) for this request.if will call error when timeout
  *
- * @cfg {Boolean} serializeArray
- * whether add [] to data's name when data's value is array in serialization
+ * @cfg {Boolean} traditional
+ * whether not to add [] to data's name when data's value is array in serialization
  *
  * @cfg {Object} xhrFields
  * name-value to set to native xhr.set as xhrFields:{withCredentials:true}
@@ -268,7 +268,7 @@ function IO(c) {
 
   this.userConfig = c;
 
-  c = setUpConfig(c);
+  c = ajaxSetup(c);
 
   assign(this, {
     // 结构化数据，如 json
@@ -338,7 +338,7 @@ function IO(c) {
     io: this,
   });
 
-  TransportConstructor = transports[c.dataType[0]] || transports['*'];
+  TransportConstructor = transports[c.type[0]] || transports['*'];
   transport = new TransportConstructor(this);
 
   this.transport = transport;
@@ -347,18 +347,18 @@ function IO(c) {
     this.setRequestHeader('Content-Type', c.contentType);
   }
 
-  const dataType = c.dataType[0];
+  const type = c.type[0];
   let i;
   const timeout = c.timeout;
   const context = c.context;
   const headers = c.headers;
   const accepts = c.accepts;
 
-  // Set the Accepts header for the server, depending on the dataType
+  // Set the Accepts header for the server, depending on the type
   this.setRequestHeader(
     'Accept',
-    dataType && accepts[dataType] ?
-    accepts[dataType] + (dataType === '*' ? '' : ', */*; q=0.01') :
+    type && accepts[type] ?
+    accepts[type] + (type === '*' ? '' : ', */*; q=0.01') :
       accepts['*']
   );
 
@@ -506,7 +506,7 @@ assign(IO, {
    * @member IO
    * @static
    */
-  setupConfig(setting) {
+  ajaxSetup(setting) {
     utils.mix(defaultConfig, setting, {
       deep: true,
     });

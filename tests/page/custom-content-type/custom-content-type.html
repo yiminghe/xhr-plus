@@ -1,0 +1,16 @@
+<meta charset='utf-8'/>
+<script src="/examples/export.js"></script>
+<script>
+    io({
+        url: '../../data/receive-json.jss',
+        method: 'post',
+        data: JSON.stringify({
+            x: 1
+        }),
+        type: 'json',
+        contentType: 'application/json',
+        complete(d, s) {
+            console.log('complete ....', s, d);
+        }
+    });
+</script>

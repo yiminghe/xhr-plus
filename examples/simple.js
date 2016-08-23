@@ -1,4 +1,4 @@
-import io from 'xhr-enhancer';
+import io from 'xhr-plus';
 
 const a = 0;
 
@@ -15,7 +15,17 @@ if (!a) {
 }
 
 io({
-  dataType: 'jsonp',
+  url: './data/error.json',
+  success(...args) {
+    console.log('xhr error success', args);
+  },
+  error(...args) {
+    console.log('xhr error error', args);
+  },
+});
+
+io({
+  type: 'jsonp',
   jsonpCallback: 'ok',
   url: './data/res.js',
   success(...args) {
@@ -28,7 +38,7 @@ io({
 
 
 io({
-  dataType: 'jsonp',
+  type: 'jsonp',
   jsonpCallback: 'ok2',
   crossDomain: true,
   url: './data/res2.js',

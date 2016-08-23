@@ -1,6 +1,6 @@
 import utils from './utils';
 import IO from './base';
-IO.setupConfig({
+IO.ajaxSetup({
   jsonp: 'callback',
   jsonpCallback() {
     // 不使用 now() ，极端情况下可能重复
@@ -10,8 +10,8 @@ IO.setupConfig({
 IO.addPreprocessor('start', (e) => {
   const io = e.io;
   const c = io.config;
-  const dataType = c.dataType;
-  if (dataType[0] === 'jsonp') {
+  const type = c.type;
+  if (type[0] === 'jsonp') {
     // jsonp does not need contentType.
     // https://github.com/kissyteam/kissy/issues/394
     delete c.contentType;
@@ -70,9 +70,9 @@ IO.addPreprocessor('start', (e) => {
       return response[0];
     };
 
-    dataType.length = 2;
+    type.length = 2;
     // 利用 script transport 发送 script 请求
-    dataType[0] = 'script';
-    dataType[1] = 'json';
+    type[0] = 'script';
+    type[1] = 'json';
   }
 });

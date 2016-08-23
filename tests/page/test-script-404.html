@@ -1,0 +1,19 @@
+<meta charset='utf-8'/>
+<script src="/examples/export.js"></script>
+<script>
+    io({
+        url: "404",
+        // type:'xml',
+        // type:'json',
+        type: 'script',
+        success() {
+            console.log('success', arguments);
+        },
+        error() {
+            console.log('error', arguments);
+        },
+        complete() {
+            console.log('complete', arguments);
+        }
+    });
+</script>

@@ -1,5 +1,6 @@
 import utils from './utils';
 import querystring from 'modulex-querystring/lib/querystring';
+import urlUtils from 'modulex-url/lib/url';
 import IO from './base';
 import assign from 'object-assign';
 import { OK_CODE, NO_CONTENT_CODE, NOT_FOUND_CODE, NO_CONTENT_CODE2 } from './constants';
@@ -65,7 +66,7 @@ function getIfModifiedKey(c) {
       // random timestamp is forced to fetch code file from server
       delete ifModifiedKey.query._ksTS;
     }
-    ifModifiedKey = querystring.stringify(ifModifiedKey);
+    ifModifiedKey = urlUtils.stringify(ifModifiedKey);
   }
   return ifModifiedKey;
 }
@@ -76,7 +77,7 @@ assign(XhrTransportBase.proto, {
     const c = io.config;
     const nativeXhr = this.nativeXhr;
     const files = c.files;
-    const type = files ? 'post' : c.type;
+    const method = files ? 'post' : c.method;
     const async = c.async;
     let username;
     const mimeType = io.mimeType;
@@ -105,12 +106,16 @@ assign(XhrTransportBase.proto, {
     }
     username = c.username;
     if (username) {
-      nativeXhr.open(type, url, async, username, c.password);
+      nativeXhr.open(method, url, async, username, c.password);
     } else {
-      nativeXhr.open(type, url, async);
+      nativeXhr.open(method, url, async);
     }
 
     xhrFields = c.xhrFields || {};
+
+    if (c.withCredentials) {
+      xhrFields.withCredentials = c.withCredentials;
+    }
 
     if ('withCredentials' in xhrFields) {
       if (!supportCORS) {
@@ -158,10 +163,10 @@ assign(XhrTransportBase.proto, {
       }
       assign(data, files);
       sendContent = new FormData();
-      data.each((vs, k) => {
+      utils.each(data, (vs, k) => {
         if (Array.isArray(vs)) {
           utils.each(vs, (v) => {
-            sendContent.append(k + (c.serializeArray ? '[]' : ''), v);
+            sendContent.append(k + (c.traditional ? '' : '[]'), v);
           });
         } else {
           sendContent.append(k, vs);

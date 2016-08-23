@@ -1,0 +1,22 @@
+<meta charset='utf-8'/>
+<script src="/examples/export.js"></script>
+<script>
+    document.domain = 'alipay.com';
+
+    io({
+        url: '//local2.alipay.com:8000/tests/data/io.jss',
+        cache: false,
+        type: 'json',
+        subDomainProxyUrl: "/tests/page/subdomain/proxy.html",
+        useSubDomainProxy: 'force',
+        success(d) {
+            console.log("success", d);
+        },
+        error(e) {
+            console.log('error', e);
+        },
+        complete() {
+            console.log("complete");
+        }
+    });
+</script>

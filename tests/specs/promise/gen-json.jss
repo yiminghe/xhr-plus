@@ -1,6 +1,6 @@
-module.exports = function* () {
-    this.type = 'json';
-    this.body = {
-        x: this.query.x
-    };
+module.exports = function*() {
+  this.set('ContentType', 'application/json');
+  this.body = JSON.stringify({
+    x: this.query.x
+  });
 };

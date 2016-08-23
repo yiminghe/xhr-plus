@@ -1,0 +1,17 @@
+<meta charset='utf-8'/>
+<script src="/examples/export.js"></script>
+<script>
+    io({
+        url: "../data/io-json.jss",
+        type:'json',
+        success() {
+            console.log('success', arguments);
+        },
+        error() {
+            console.log('error', arguments);
+        },
+        complete() {
+            console.log('complete', arguments);
+        }
+    });
+</script>

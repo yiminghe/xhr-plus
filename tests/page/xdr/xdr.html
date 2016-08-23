@@ -1,0 +1,43 @@
+<meta charset='utf-8'/>
+<script src="/examples/export.js"></script>
+<script type="text/javascript">
+    document.writeln('<iframe src="' +
+            '//local2.alipay.com:8000/tests/page/xdr/set-cookie.jss' +
+            '"></iframe>')
+</script>
+<script>
+    io({
+        headers: {
+            // cross domain 设置 header ie 无效
+            // 原生 chrome.firefox 可行
+            yiminghe: 'oo'
+        },
+        cache: false,
+        type: 'json',
+        url: '//local2.alipay.com:8000/tests/page/xdr/xdr.jss',
+        withCredentials: true,
+        data: {
+            action: 'x'
+        },
+        success(d, s, r) {
+            // body 都可读
+            console.log("body : " + d.action);
+
+            // ie6-7 flash 不可读
+            // ie8-9 XDomainRequest 不可读
+            // header ie10 ,chrome, firefox 可读
+            console.log("header : " + d.yiminghe);
+
+            // ie8-9 XDomainRequest 不可读
+            // header ie10 ,chrome, firefox 可读
+            // ie6-7 flash 可读
+            console.log("cookie : " + d.cors);
+
+            // 原生 chrome.firefox 响应头不能读
+            // ie6-7 flash 不可读
+            // ie8-9 XDomainRequest 不可读
+            // ie10 可以读
+            console.log(r.getResponseHeader("X-Powered-By"));
+        }
+    });
+</script>

@@ -7,7 +7,7 @@ const BREATH_INTERVAL = 30;
 const iframeConverter = utils.clone(IO.getConfig().converters.text);
 
 // https://github.com/kissyteam/kissy/issues/304
-// returned data must be escaped by server for json dataType
+// returned data must be escaped by server for json type
 // as data
 // eg:
 // <body>
@@ -15,14 +15,14 @@ const iframeConverter = utils.clone(IO.getConfig().converters.text);
 //    "&lt;a&gt;xx&lt;/a&gt;"
 // }
 // </body>
-// text or html dataType is of same effect.
+// text or html type is of same effect.
 // same as normal ajax or html5 FileData
 iframeConverter.json = (str) => {
   return JSON.parse(utils.unEscapeHtml(str));
 };
 
 // iframe 内的内容就是 body.innerText
-IO.setupConfig({
+IO.ajaxSetup({
   converters: {
     // iframe 到其他类型的转化和 text 一样
     iframe: iframeConverter,
@@ -88,7 +88,7 @@ function createIframe(xhr) {
   iframe.style.width = 0;
   iframe.style.height = 0;
   iframe.style.visibility = 'hidden';
-  document.body.insertBefore(iframe, null);
+  document.documentElement.insertBefore(iframe, null);
   return iframe;
 }
 
@@ -116,9 +116,11 @@ function addDataToForm(query, form, serializeArray) {
 }
 
 function removeFieldsFromData(fields) {
-  fields.forEach((f) => {
-    f.parentNode.removeChild(f);
-  });
+  if (fields) {
+    fields.forEach((f) => {
+      f.parentNode.removeChild(f);
+    });
+  }
 }
 
 function setAttrs(form, attrs) {
@@ -256,16 +258,16 @@ assign(IframeTransport.prototype, {
     }
 
     if (query) {
-      fields = addDataToForm(query, form, c.serializeArray);
+      fields = addDataToForm(query, form, !c.traditional);
     }
 
     this.fields = fields;
 
-    function go() {
+    const go = () => {
       utils.addEvent(iframe, 'load', this._callback);
       utils.addEvent(iframe, 'error', this._callback);
       form.submit();
-    }
+    };
 
     // ie6 need a breath
     if (utils.ie === 6) {

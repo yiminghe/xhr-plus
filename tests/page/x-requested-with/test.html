@@ -1,0 +1,12 @@
+<meta charset='utf-8'/>
+<script src="/examples/export.js"></script>
+<script>
+    io.ajaxSetup({
+        headers: {
+            'X-Requested-With': false
+        }
+    });
+    io({
+        url: '//local2.alipay.com:8000/tests/page/xdr/xdr.jss'
+    });
+</script>

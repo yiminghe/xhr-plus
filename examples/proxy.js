@@ -1,4 +1,4 @@
-import io from 'xhr-enhancer';
+import io from 'xhr-plus';
 document.domain = 'alipay.com';
 
 io({

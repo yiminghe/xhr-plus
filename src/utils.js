@@ -308,11 +308,25 @@ const utils = {
     return (pre || EMPTY) + guid++;
   },
   makeArray(o) {
-    if (!o) {
+    if (o === undefined || o === null) {
       return [];
     }
     if (Array.isArray(o)) {
       return o;
+    }
+    const lengthType = typeof o.length;
+    const oType = typeof o;
+    // The strings and functions also have 'length'
+    if (lengthType !== 'number' ||
+      // select element
+      // https://github.com/kissyteam/kissy/issues/537
+      typeof o.nodeName === 'string' ||
+      // window
+      (o !== null && o === o.window) ||
+      oType === 'string' ||
+      // https://github.com/ariya/phantomjs/issues/11478
+      (oType === 'function' && !('item' in o && lengthType === 'number'))) {
+      return [o];
     }
     const ret = [];
     for (let i = 0, l = o.length; i < l; i++) {
@@ -415,6 +429,12 @@ const utils = {
     }
   },
   noop() {
+  },
+  isEmptyObject(obj) {
+    return !obj || !Object.keys(obj).length;
+  },
+  inArray(needle, arr) {
+    return arr.indexOf(needle) !== -1;
   },
   formatQuery(o, sep, eq, serializeArray) {
     sep = sep || '&';

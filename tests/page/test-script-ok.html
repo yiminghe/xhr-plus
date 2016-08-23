@@ -1,0 +1,11 @@
+<meta charset='utf-8'/>
+<script src="/examples/export.js"></script>
+<script>
+    io({
+        url: '/tests/data/interface.jss?type=post&dataType=script',
+        type: 'script',
+        success(data) {
+            console.log(data, globalScriptTest);
+        }
+    });
+</script>

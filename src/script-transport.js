@@ -2,9 +2,8 @@ import utils from './utils';
 import assign from 'object-assign';
 import IO from './base';
 import { OK_CODE, ERROR_CODE } from './constants';
-let headNode;
 
-IO.setupConfig({
+IO.ajaxSetup({
   accepts: {
     script: `text/javascript,\
 application/javascript,\
@@ -79,12 +78,8 @@ function getScript(uri, success, charset) {
     end(1);
   };
 
-  if (!headNode) {
-    headNode = document.getElementsByTagName('head')[0] || document.documentElement;
-  }
-
   // can use js in head
-  headNode.insertBefore(node, headNode.firstChild);
+  document.documentElement.insertBefore(node, document.documentElement.firstChild);
   return node;
 }
 

@@ -37,7 +37,7 @@ const FormSerializer = {
   getFormData(forms) {
     let elements = [];
     const data = {};
-    forms.forEach((el) => {
+    utils.each(forms, (el) => {
       // form 取其表单元素集合
       // 其他直接取自身
       const subs = el.elements ? elementsToArray(el.elements) : [el];
@@ -61,6 +61,7 @@ const FormSerializer = {
       // 这样子才取值
     });
     elements.forEach((el) => {
+      // TODO, select multiple, welcome pr
       let val = el.value;
       let vs;
 

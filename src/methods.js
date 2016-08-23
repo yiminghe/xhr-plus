@@ -11,11 +11,11 @@ function handleResponseData(io) {
   const xml = io.responseXML;
   const c = io.config;
   const converts = c.converters;
-  let type;
+  let type0;
   let contentType;
   let responseData;
   const contents = c.contents;
-  const dataType = c.dataType;
+  const type = c.type;
 
   // 例如 script 直接是js引擎执行，没有返回值，不需要自己处理初始返回值
   // jsonp 时还需要把 script 转换成 json，后面还得自己来
@@ -23,32 +23,32 @@ function handleResponseData(io) {
     contentType = io.mimeType || io.getResponseHeader('Content-Type');
 
     // 去除无用的通用格式
-    while (dataType[0] === '*') {
-      dataType.shift();
+    while (type[0] === '*') {
+      type.shift();
     }
 
-    if (!dataType.length) {
+    if (!type.length) {
       // 获取源数据格式，放在第一个
-      for (type in contents) {
-        if (contents.hasOwnProperty(type) &&
-          contents[type].test(contentType)) {
-          if (dataType[0] !== type) {
-            dataType.unshift(type);
+      for (type0 in contents) {
+        if (contents.hasOwnProperty(type0) &&
+          contents[type0].test(contentType)) {
+          if (type[0] !== type0) {
+            type.unshift(type0);
           }
           break;
         }
       }
     }
 
-    // 服务器端没有告知（并且客户端没有 mime type ）默认 text 类型
-    dataType[0] = dataType[0] || 'text';
+    // 服务器端没有告知（并且客户端没有 mime type0 ）默认 text 类型
+    type[0] = type[0] || 'text';
 
     // 获得合适的初始数据
-    for (let dataTypeIndex = 0; dataTypeIndex < dataType.length; dataTypeIndex++) {
-      if (dataType[dataTypeIndex] === 'text' && text !== undefined) {
+    for (let dataTypeIndex = 0; dataTypeIndex < type.length; dataTypeIndex++) {
+      if (type[dataTypeIndex] === 'text' && text !== undefined) {
         responseData = text;
         break;
-      } else if (dataType[dataTypeIndex] === 'xml' && xml !== undefined) {
+      } else if (type[dataTypeIndex] === 'xml' && xml !== undefined) {
         // 有 xml 值才直接取，否则可能还要从 xml 转
         responseData = xml;
         break;
@@ -59,10 +59,10 @@ function handleResponseData(io) {
       const rawData = { text, xml };
       // 看能否从 text xml 转换到合适数据，并设置起始类型为 text/xml
       ['text', 'xml'].forEach((prevType) => {
-        const type0 = dataType[0];
+        type0 = type[0];
         const converter = converts[prevType] && converts[prevType][type0];
         if (converter && rawData[prevType]) {
-          dataType.unshift(prevType);
+          type.unshift(prevType);
           responseData = prevType === 'text' ? text : xml;
           return false;
         }
@@ -70,20 +70,20 @@ function handleResponseData(io) {
       });
     }
   }
-  let prevType = dataType[0];
+  let prevType = type[0];
 
   // 按照转化链把初始数据转换成我们想要的数据类型
-  for (let i = 1; i < dataType.length; i++) {
-    type = dataType[i];
+  for (let i = 1; i < type.length; i++) {
+    type0 = type[i];
 
-    const converter = converts[prevType] && converts[prevType][type];
+    const converter = converts[prevType] && converts[prevType][type0];
 
     if (!converter) {
-      throw new Error(`no covert for ${prevType} => ${type}`);
+      throw new Error(`no covert for ${prevType} => ${type0}`);
     }
     responseData = converter(responseData);
 
-    prevType = type;
+    prevType = type0;
   }
 
   io.responseData = responseData;
@@ -215,50 +215,38 @@ assign(IO.prototype,
         clearTimeout(timeoutTimer);
         this.timeoutTimer = 0;
       }
-      /**
-       * fired after request completes (success or error)
-       * @event complete
-       * @member IO
-       * @static
-       * @param {Event.CustomEvent.Object} e
-       * @param {IO} e.io current io
-       */
-
-      /**
-       * fired after request succeeds
-       * @event success
-       * @member IO
-       * @static
-       * @param {Event.CustomEvent.Object} e
-       * @param {IO} e.io current io
-       */
-
-      /**
-       * fired after request occurs error
-       * @event error
-       * @member IO
-       * @static
-       * @param {Event.CustomEvent.Object} e
-       * @param {IO} e.io current io
-       */
-      const handler = isSuccess ? 'success' : 'error';
-      let h = config[handler];
-      const v = [this.responseData, statusText, this];
       const context = config.context;
+      const handler = isSuccess ? 'success' : 'error';
+      const payload = [this.responseData, statusText, this];
+      let error;
+      if (!isSuccess) {
+        error = new Error(statusText);
+        error.xhr = this.transport.nativeXhr;
+        error.status = status;
+        if (config.error) {
+          config.error.call(context, error);
+        }
+      } else if (config.success) {
+        config.success.apply(context, payload);
+      }
+
       const eventObject = {
         io: this,
+        payload,
+        error,
       };
+      const h = config.complete;
       if (h) {
-        h.apply(context, v);
-      }
-      h = config.complete;
-      if (h) {
-        h.apply(context, v);
+        h.apply(context, payload);
       }
       IO.fire(handler, eventObject);
       IO.fire('complete', eventObject);
       this.getPromise();
-      this[isSuccess ? '__resolve' : '__reject'](v);
+      if (isSuccess) {
+        this.__resolve(this.responseData);
+      } else {
+        this.__reject(error);
+      }
     },
 
     _getUrlForSend() {
@@ -276,7 +264,7 @@ assign(IO.prototype,
       if (search && Object.keys(uri.query).length) {
         search = `&${search.substring(1)}`;
       }
-      return url.stringify(uri, c.serializeArray) + search;
+      return url.stringify(uri, !c.traditional) + search;
     },
   }
 );

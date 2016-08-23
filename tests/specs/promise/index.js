@@ -1,173 +1,152 @@
-var Promise = require('promise');
-var io = require('io');
+import { Promise } from 'es6-promise';
+import io from '../../../index';
+import expect from 'expect.js';
+import isPhantomjs from '../isPhantomjs';
 
-var mUrl = '/tests/browser/specs/promise/gen-json.jss';
+const mUrl = '/tests/specs/promise/gen-json.jss';
 
-describe('S.IO as a promise', function () {
-    it('context should works as before', function (done) {
-        var c = {};
-        io({
-            url: mUrl,
-            context: c,
-            data: {
-                x: 99
-            },
-            dataType: 'json',
-            success: function (d) {
-                expect(d.x).to.be('99');
-                expect(this).to.be(c);
-                done();
-            }
-        });
+describe('IO as a promise', () => {
+  it('context should works as before', (done) => {
+    const c = {};
+    io({
+      url: mUrl,
+      context: c,
+      data: {
+        x: 99,
+      },
+      type: 'json',
+      success(d) {
+        expect(d.x).to.be('99');
+        expect(this).to.be(c);
+        done();
+      },
+    });
+  });
+
+  it('should support then differently', (done) => {
+    const r = io({
+      url: mUrl,
+      data: {
+        x: 99,
+      },
+      type: 'json',
+    });
+    r.then((v) => {
+      expect(v.x).to.be('99');
+    });
+    r.always((v) => {
+      expect(v.x).to.be('99');
+      done();
+    });
+  });
+
+  if (!isPhantomjs) {
+    it('should support fail differently', (done) => {
+      const r = io({
+        url: '404',
+        context: {},
+        data: {
+          x: 99,
+        },
+        type: 'json',
+      });
+      r.then(() => {
+      }, (v) => {
+        expect(v.message).to.be('Not Found');
+      });
+      r.fail((v) => {
+        expect(v.message).to.be('Not Found');
+      });
+      r.always((v) => {
+        expect(v.message).to.be('Not Found');
+        done();
+      });
+    });
+  }
+
+  it('should support chained value', (done) => {
+    const r = io({
+      url: mUrl,
+      context: {},
+      data: {
+        x: 99,
+      },
+      type: 'json',
     });
 
-    it('should support then differently', function (done) {
-        var r = io({
-            url: mUrl,
-            context: {},
-            data: {
-                x: 99
-            },
-            dataType: 'json'
-        });
-        r.then(function (v) {
-            expect(v[0].x).to.be('99');
-            expect(this).to.be(window);
-        });
-        r.fin(function (v, ret) {
-            expect(ret).to.be(true);
-            expect(v[0].x).to.be('99');
-            expect(this).to.be(window);
-            done();
-        });
+    r.then((v) => {
+      return Number(v.x) + 1;
+    }).then((v) => {
+      expect(v).to.be(100);
+      done();
+    });
+  });
+
+  it('should support nested promise', (done) => {
+    const r = io({
+      url: mUrl,
+      context: {},
+      data: {
+        x: 99,
+      },
+      type: 'json',
     });
 
-    it('should support fail differently', function (done) {
-        var r = io({
-            url: '404',
-            context: {},
-            data: {
-                x: 99
-            },
-            dataType: 'json'
-        });
-        r.then(function () {
-        }, function (v) {
-            expect(v[1]).to.be('Not Found');
-        });
-        r.fail(function (v) {
-            expect(v[1]).to.be('Not Found');
-        });
-        r.fin(function (v, ret) {
-            expect(v[1]).to.be('Not Found');
-            expect(ret).to.be(false);
-            done();
-        });
+    r.then((v) => {
+      expect(v.x).to.be('99');
+      return io({
+        url: mUrl,
+        context: {},
+        data: {
+          x: 101,
+        },
+        type: 'json',
+      });
+    }).then((v) => {
+      expect(v.x).to.be('101');
+      done();
+    });
+  });
+
+  it('then will catch then error', (done) => {
+    io({
+      url: mUrl,
+      data: {
+        x: 99,
+      },
+      type: 'json',
+    }).then(() => {
+      throw new Error('haha');
+    }).then(() => {
+    }, (e) => {
+      expect(e.message).to.be('haha');
+      done();
+    });
+  });
+
+  it('should support Promise.all', (done) => {
+    const r = io({
+      url: mUrl,
+      context: {},
+      data: {
+        x: 99,
+      },
+      type: 'json',
     });
 
-    it('should support chained value', function (done) {
-        var r = io({
-            url: mUrl,
-            context: {},
-            data: {
-                x: 99
-            },
-            dataType: 'json'
-        });
-
-        r.then(
-            function (v) {
-                return Number(v[0].x) + 1;
-            }).then(function (v) {
-                expect(v).to.be(100);
-                done();
-            });
+    const r2 = io({
+      url: mUrl,
+      context: {},
+      data: {
+        x: 101,
+      },
+      type: 'json',
     });
 
-    it('should support nested promise', function (done) {
-        var r = io({
-            url: mUrl,
-            context: {},
-            data: {
-                x: 99
-            },
-            dataType: 'json'
-        });
-
-        r.then(function (v) {
-            expect(v[0].x).to.be('99');
-            return io({
-                url: mUrl,
-                context: {},
-                data: {
-                    x: 101
-                },
-                dataType: 'json'
-            });
-        }).then(function (v) {
-            expect(v[0].x).to.be('101');
-            done();
-        });
+    Promise.all([r, r2]).then((vs) => {
+      expect(vs[0].x).to.be('99');
+      expect(vs[1].x).to.be('101');
+      done();
     });
-
-    it('then will catch then error', function (done) {
-        io({
-            url: mUrl,
-            data: {
-                x: 99
-            },
-            dataType: 'json'
-        }).then(function () {
-            throw new Error('haha');
-        }).then(function () {
-        }, function (e) {
-            expect(e.message).to.be('haha');
-            done();
-        });
-    });
-
-    it('then will not catch success config error', function (done) {
-        io({
-            url: mUrl,
-            data: {
-                x: 99
-            },
-            dataType: 'json',
-            success: function () {
-                throw new Error('haha');
-            }
-        }).then(function () {
-        }, function (e) {
-            expect(e.message).to.be('');
-            done();
-        });
-    });
-
-    it('should support Promise.all', function (done) {
-        var r = io({
-            url: mUrl,
-            context: {},
-            data: {
-                x: 99
-            },
-            dataType: 'json'
-        });
-
-        var r2 = io({
-            url: mUrl,
-            context: {},
-            data: {
-                x: 101
-            },
-            dataType: 'json'
-        });
-
-        var ret;
-
-        Promise.all([r, r2]).then(function (vs) {
-            expect(vs[0][0].x).to.be('99');
-            expect(vs[1][0].x).to.be('101');
-            done();
-        });
-    });
+  });
 });

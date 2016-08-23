@@ -1,0 +1,20 @@
+<meta charset='utf-8'/>
+<script src="/examples/export.js"></script>
+<script>
+    io({
+        url: "404",
+        type: 'jsonp',
+        forceScript: true,
+        success() {
+            console.log('success', arguments);
+        },
+        // ie : parseerror ，成功 load，但是没有执行 callback ,script -> json 出错
+        // firefox : scripterror , 没有成功 load，直接错了
+        error() {
+            console.log('error', arguments);
+        },
+        complete() {
+            console.log('complete', arguments);
+        }
+    });
+</script>

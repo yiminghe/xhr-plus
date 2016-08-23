@@ -7,7 +7,7 @@ import IO from './base';
 // hostname:{iframe: , ready:}
 const iframeMap = {};
 
-IO.setupConfig({
+IO.ajaxSetup({
   useSubDomainProxy: '',
   subDomainProxyUrl: '/proxy.htm',
 });
@@ -60,7 +60,7 @@ assign(SubDomainTransport.prototype, XhrTransportBase.proto, {
         left: '-9999px',
         top: '-9999px',
       });
-      document.body.insertBefore(iframe, null);
+      document.documentElement.insertBefore(iframe, null);
       iframeUri = {};
       iframeUri.protocol = uri.protocol;
       iframeUri.host = uri.host;
