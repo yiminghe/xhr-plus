@@ -1,3 +1,5 @@
+/* eslint no-console:0 */
+
 import io from 'xhr-plus';
 document.domain = 'alipay.com';
 

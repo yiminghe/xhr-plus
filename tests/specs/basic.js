@@ -93,7 +93,7 @@ describe('basic', () => {
 
   describe('jsonp', () => {
     it('custom callback', (done) => {
-      window.customCallback = function (data) {
+      window.customCallback = (data) => {
         expect(typeof data).to.be('object');
         expect(data.callback).to.be('customCallback');
         try {

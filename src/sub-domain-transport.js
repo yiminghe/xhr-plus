@@ -1,5 +1,7 @@
+/* eslint no-console:0 */
+
 import utils from './utils';
-import url from 'modulex-url/lib/url';
+import url from 'modulex-url';
 import assign from 'object-assign';
 import XhrTransportBase from './xhr-transport-base';
 import IO from './base';

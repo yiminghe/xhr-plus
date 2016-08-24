@@ -1,5 +1,5 @@
 import utils from './utils';
-import querystring from 'modulex-querystring/lib/querystring';
+import querystring from 'modulex-querystring';
 import IO from './base';
 import assign from 'object-assign';
 import { OK_CODE, ERROR_CODE } from './constants';

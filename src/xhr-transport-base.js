@@ -1,6 +1,8 @@
+/* eslint no-console:0 */
+
 import utils from './utils';
-import querystring from 'modulex-querystring/lib/querystring';
-import urlUtils from 'modulex-url/lib/url';
+import querystring from 'modulex-querystring';
+import urlUtils from 'modulex-url';
 import IO from './base';
 import assign from 'object-assign';
 import { OK_CODE, NO_CONTENT_CODE, NOT_FOUND_CODE, NO_CONTENT_CODE2 } from './constants';

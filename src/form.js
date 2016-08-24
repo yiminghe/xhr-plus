@@ -1,5 +1,5 @@
 import IO from './base';
-import querystring from 'modulex-querystring/lib/querystring';
+import querystring from 'modulex-querystring';
 import assign from 'object-assign';
 import FormSerializer from './form-serializer';
 

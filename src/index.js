@@ -6,8 +6,8 @@ import './form';
 import './iframe-transport';
 import './methods';
 import FormSerializer from './form-serializer';
-import url from 'modulex-url/lib/url';
-import querystring from 'modulex-querystring/lib/querystring';
+import url from 'modulex-url';
+import querystring from 'modulex-querystring';
 
 io.serialize = FormSerializer.serialize;
 io.getFormData = FormSerializer.getFormData;

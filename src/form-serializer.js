@@ -1,5 +1,5 @@
 import utils from './utils';
-import querystring from 'modulex-querystring/lib/querystring';
+import querystring from 'modulex-querystring';
 const rselectTextarea = /^(?:select|textarea)/i;
 const rCRLF = /\r?\n/g;
 /* eslint max-len:0 */

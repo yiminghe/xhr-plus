@@ -1,8 +1,10 @@
+/* eslint no-console:0 */
+
 import utils from './utils';
-import querystring from 'modulex-querystring/lib/querystring';
+import querystring from 'modulex-querystring';
 import { Promise } from 'es6-promise';
 import assign from 'object-assign';
-import url from 'modulex-url/lib/url';
+import url from 'modulex-url';
 const rlocalProtocol = /^(?:about|app|app\-storage|.+\-extension|file|widget):$/;
 const rspace = /\s+/;
 function mirror(s) {

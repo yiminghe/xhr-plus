@@ -1,6 +1,8 @@
+/* eslint no-console:0 */
+
 import assign from 'object-assign';
 import IO from './base';
-import url from 'modulex-url/lib/url';
+import url from 'modulex-url';
 import { OK_CODE, MULTIPLE_CHOICES, NOT_MODIFIED } from './constants';
 // get individual response header from response header str
 const HEADER_REG = /^(.*?):[ \t]*([^\r\n]*)\r?$/mg;
