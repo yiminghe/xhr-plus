@@ -11,6 +11,8 @@ webpackJsonp([0],[
 
 	'use strict';
 	
+	/* eslint no-console:0 */
+	
 	window.io = __webpack_require__(2);
 	
 	console.log(window.io);

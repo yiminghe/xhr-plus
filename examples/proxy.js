@@ -3,12 +3,12 @@ webpackJsonp([1],{
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(97);
+	module.exports = __webpack_require__(93);
 
 
 /***/ },
 
-/***/ 97:
+/***/ 93:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19,7 +19,7 @@ webpackJsonp([1],{
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	document.domain = 'alipay.com';
+	document.domain = 'alipay.com'; /* eslint no-console:0 */
 	
 	(0, _xhrPlus2.default)({
 	  url: '//local2.alipay.com:8000/examples/data/res.json',

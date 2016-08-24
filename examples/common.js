@@ -115,36 +115,36 @@
 	
 	var _base2 = _interopRequireDefault(_base);
 	
+	__webpack_require__(83);
+	
 	__webpack_require__(87);
+	
+	__webpack_require__(88);
+	
+	__webpack_require__(89);
 	
 	__webpack_require__(91);
 	
 	__webpack_require__(92);
 	
-	__webpack_require__(93);
-	
-	__webpack_require__(95);
-	
-	__webpack_require__(96);
-	
-	var _formSerializer = __webpack_require__(94);
+	var _formSerializer = __webpack_require__(90);
 	
 	var _formSerializer2 = _interopRequireDefault(_formSerializer);
 	
-	var _url = __webpack_require__(81);
+	var _modulexUrl = __webpack_require__(81);
 	
-	var _url2 = _interopRequireDefault(_url);
+	var _modulexUrl2 = _interopRequireDefault(_modulexUrl);
 	
-	var _querystring = __webpack_require__(75);
+	var _modulexQuerystring = __webpack_require__(75);
 	
-	var _querystring2 = _interopRequireDefault(_querystring);
+	var _modulexQuerystring2 = _interopRequireDefault(_modulexQuerystring);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	_base2.default.serialize = _formSerializer2.default.serialize;
 	_base2.default.getFormData = _formSerializer2.default.getFormData;
-	_base2.default.url = _url2.default;
-	_base2.default.querystring = _querystring2.default;
+	_base2.default.url = _modulexUrl2.default;
+	_base2.default.querystring = _modulexQuerystring2.default;
 	
 	exports.default = _base2.default;
 	module.exports = exports['default'];
@@ -163,9 +163,9 @@
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _querystring = __webpack_require__(75);
+	var _modulexQuerystring = __webpack_require__(75);
 	
-	var _querystring2 = _interopRequireDefault(_querystring);
+	var _modulexQuerystring2 = _interopRequireDefault(_modulexQuerystring);
 	
 	var _es6Promise = __webpack_require__(76);
 	
@@ -173,20 +173,21 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _url = __webpack_require__(81);
+	var _modulexUrl = __webpack_require__(81);
 	
-	var _url2 = _interopRequireDefault(_url);
+	var _modulexUrl2 = _interopRequireDefault(_modulexUrl);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var rlocalProtocol = /^(?:about|app|app\-storage|.+\-extension|file|widget):$/;
+	var rlocalProtocol = /^(?:about|app|app\-storage|.+\-extension|file|widget):$/; /* eslint no-console:0 */
+	
 	var rspace = /\s+/;
 	function mirror(s) {
 	  return s;
 	}
 	var rnoContent = /^(?:GET|HEAD)$/;
 	var locationHref = (typeof location === 'undefined' ? 'undefined' : (0, _typeof3.default)(location)) !== undefined ? location.href : null;
-	var locationUrl = locationHref && _url2.default.parse(locationHref);
+	var locationUrl = locationHref && _modulexUrl2.default.parse(locationHref);
 	var isLocal = rlocalProtocol.test(locationUrl.protocol);
 	var transports = {};
 	var defaultConfig = {
@@ -236,7 +237,7 @@
 	  var method = c.method;
 	  var type = c.type;
 	
-	  uri = c.uri = _url2.default.parse(_url2.default.resolve(locationHref, c.url), true);
+	  uri = c.uri = _modulexUrl2.default.parse(_modulexUrl2.default.resolve(locationHref, c.url), true);
 	
 	  // see method _getUrlForSend
 	  uri.query = {};
@@ -250,7 +251,7 @@
 	
 	  if (c.processData && typeof data !== 'string') {
 	    // normalize to string
-	    c.data = _querystring2.default.stringify(data, undefined, undefined, !c.traditional);
+	    c.data = _modulexQuerystring2.default.stringify(data, undefined, undefined, !c.traditional);
 	  }
 	
 	  // 数据类型处理链，一步步将前面的数据类型转化成最后一个
@@ -262,7 +263,7 @@
 	
 	  if (!c.hasContent) {
 	    if (c.data) {
-	      (0, _objectAssign2.default)(uri.query, _querystring2.default.parse(c.data));
+	      (0, _objectAssign2.default)(uri.query, _modulexQuerystring2.default.parse(c.data));
 	    }
 	    if (c.cache === false) {
 	      uri.query._ksTS = Date.now() + '_' + _utils2.default.guid();
@@ -3964,9 +3965,9 @@
 	 * url utilities
 	 * @author yiminghe@gmail.com
 	 */
-	var querystring = __webpack_require__(82);
+	var querystring = __webpack_require__(75);
 	var undef;
-	var Path = __webpack_require__(84);
+	var Path = __webpack_require__(82);
 	var reDisallowedInProtocolOrAuth = /[#\/\?@]/g,
 	    reDisallowedInPathName = /[#\?]/g,
 	    reDisallowedInHash = /#/g,
@@ -4274,163 +4275,6 @@
 
 /***/ },
 /* 82 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(75);
-	module.exports.version = __webpack_require__(83).version;
-
-/***/ },
-/* 83 */
-/***/ function(module, exports) {
-
-	module.exports = {
-		"_args": [
-			[
-				{
-					"name": "modulex-querystring",
-					"raw": "modulex-querystring",
-					"rawSpec": "",
-					"scope": null,
-					"spec": "latest",
-					"type": "tag"
-				},
-				"/Users/yiminghe/code/my-lib/xhr-enhancer"
-			]
-		],
-		"_cnpm_publish_time": 1425359278228,
-		"_from": "modulex-querystring@latest",
-		"_id": "modulex-querystring@1.0.5",
-		"_inCache": true,
-		"_installable": true,
-		"_location": "/modulex-querystring",
-		"_nodeVersion": "0.12.0",
-		"_npmUser": {
-			"email": "yiminghe@gmail.com",
-			"name": "yiminghe"
-		},
-		"_npmVersion": "2.5.1",
-		"_phantomChildren": {},
-		"_requested": {
-			"name": "modulex-querystring",
-			"raw": "modulex-querystring",
-			"rawSpec": "",
-			"scope": null,
-			"spec": "latest",
-			"type": "tag"
-		},
-		"_requiredBy": [
-			"/",
-			"/modulex-url"
-		],
-		"_resolved": "http://registry.npm.alibaba-inc.com/modulex-querystring/download/modulex-querystring-1.0.5.tgz",
-		"_shasum": "1c350cbb36c9b30147db71f60d29df82a78594eb",
-		"_shrinkwrap": null,
-		"_spec": "modulex-querystring",
-		"_where": "/Users/yiminghe/code/my-lib/xhr-enhancer",
-		"author": {
-			"email": "yiminghe@gmail.com",
-			"name": "yiminghe"
-		},
-		"bugs": {
-			"url": "https://github.com/modulex/querystring/issues"
-		},
-		"dependencies": {},
-		"description": "parse and stringify query data",
-		"devDependencies": {
-			"body-parser": "^1.6.5",
-			"chai": "^1.9.1",
-			"express": "^4.8.5",
-			"gulp": "^3.8.7",
-			"gulp-clean": "^0.3.1",
-			"gulp-filter": "^1.0.0",
-			"gulp-footer": "^1.0.5",
-			"gulp-header": "^1.0.5",
-			"gulp-jscs": "^1.1.0",
-			"gulp-jshint": "^1.8.4",
-			"gulp-kclean": "^0.0.13",
-			"gulp-modulex": "^1.0.0",
-			"gulp-rename": "^1.2.0",
-			"gulp-replace": "^0.4.0",
-			"gulp-uglify": "^0.3.1",
-			"gulp-util": "^3.0.0",
-			"gulp-wrapper": "^0.1.5",
-			"jshint": "^2.5.5",
-			"jshint-stylish": "^0.4.0",
-			"mocha": "^1.21.4",
-			"node-jscover": "^0.6.8",
-			"node-jscover-coveralls": "^1.0.10",
-			"node-jscover-handler": "^1.0.3",
-			"precommit-hook": "^1.0.7",
-			"serve-index": "^1.1.6",
-			"serve-static": "^1.5.3"
-		},
-		"directories": {},
-		"dist": {
-			"key": "modulex-querystring/-/modulex-querystring-1.0.5.tgz",
-			"noattachment": false,
-			"shasum": "1c350cbb36c9b30147db71f60d29df82a78594eb",
-			"size": 5480,
-			"tarball": "http://registry.npm.alibaba-inc.com/modulex-querystring/download/modulex-querystring-1.0.5.tgz"
-		},
-		"engines": {
-			"node": "~0.10"
-		},
-		"gitHead": "5a6b2ed034f2021338cdb94001ca681dfb69254b",
-		"homepage": "https://github.com/modulex/querystring",
-		"license": "MIT",
-		"maintainers": [
-			{
-				"email": "yiminghe@gmail.com",
-				"name": "yiminghe"
-			}
-		],
-		"name": "modulex-querystring",
-		"optionalDependencies": {},
-		"precommit": [
-			"lint"
-		],
-		"publish_time": 1425359278228,
-		"readme": "ERROR: No README data found!",
-		"repository": {
-			"type": "git",
-			"url": "git+ssh://git@github.com/modulex/querystring.git"
-		},
-		"scripts": {
-			"browser-test": "mocha-phantomjs http://localhost:8004/tests/runner.html",
-			"browser-test-build": "mocha-phantomjs http://localhost:8004/tests/runner.html?build",
-			"browser-test-cover": "mocha-phantomjs -R node_modules/node-jscover/lib/reporters/mocha/console http://localhost:8004/tests/runner.html?coverage",
-			"lint": "gulp lint",
-			"publish": "gulp tag",
-			"start": "node server.js"
-		},
-		"version": "1.0.5",
-		"warnings": [
-			{
-				"code": "ENOTSUP",
-				"pkgid": "modulex-querystring@1.0.5",
-				"required": {
-					"node": "~0.10"
-				}
-			},
-			{
-				"code": "ENOTSUP",
-				"pkgid": "modulex-querystring@1.0.5",
-				"required": {
-					"node": "~0.10"
-				}
-			}
-		]
-	};
-
-/***/ },
-/* 84 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(85);
-	module.exports.version = __webpack_require__(86).version;
-
-/***/ },
-/* 85 */
 /***/ function(module, exports) {
 
 	/**
@@ -4656,133 +4500,7 @@
 	 */
 
 /***/ },
-/* 86 */
-/***/ function(module, exports) {
-
-	module.exports = {
-		"_args": [
-			[
-				{
-					"name": "modulex-path",
-					"raw": "modulex-path@^1.0.0",
-					"rawSpec": "^1.0.0",
-					"scope": null,
-					"spec": ">=1.0.0 <2.0.0",
-					"type": "range"
-				},
-				"/Users/yiminghe/code/my-lib/xhr-enhancer/node_modules/modulex-url"
-			]
-		],
-		"_cnpm_publish_time": 1425359118349,
-		"_from": "modulex-path@>=1.0.0 <2.0.0",
-		"_id": "modulex-path@1.0.4",
-		"_inCache": true,
-		"_installable": true,
-		"_location": "/modulex-path",
-		"_nodeVersion": "0.12.0",
-		"_npmUser": {
-			"email": "yiminghe@gmail.com",
-			"name": "yiminghe"
-		},
-		"_npmVersion": "2.5.1",
-		"_phantomChildren": {},
-		"_requested": {
-			"name": "modulex-path",
-			"raw": "modulex-path@^1.0.0",
-			"rawSpec": "^1.0.0",
-			"scope": null,
-			"spec": ">=1.0.0 <2.0.0",
-			"type": "range"
-		},
-		"_requiredBy": [
-			"/modulex-url"
-		],
-		"_resolved": "http://registry.npm.alibaba-inc.com/modulex-path/download/modulex-path-1.0.4.tgz",
-		"_shasum": "152e428acc1c6a9d73925305e267aabca75fee22",
-		"_shrinkwrap": null,
-		"_spec": "modulex-path@^1.0.0",
-		"_where": "/Users/yiminghe/code/my-lib/xhr-enhancer/node_modules/modulex-url",
-		"author": {
-			"email": "yiminghe@gmail.com",
-			"name": "yiminghe"
-		},
-		"bugs": {
-			"url": "https://github.com/modulex/path/issues"
-		},
-		"dependencies": {},
-		"description": "utilities for operating file path",
-		"devDependencies": {
-			"body-parser": "^1.6.5",
-			"chai": "^1.9.1",
-			"express": "^4.8.5",
-			"gulp": "^3.8.7",
-			"gulp-clean": "^0.3.1",
-			"gulp-filter": "^1.0.0",
-			"gulp-footer": "^1.0.5",
-			"gulp-header": "^1.0.5",
-			"gulp-jscs": "^1.1.0",
-			"gulp-jshint": "^1.8.4",
-			"gulp-kclean": "^0.0.13",
-			"gulp-modulex": "^1.0.0",
-			"gulp-rename": "^1.2.0",
-			"gulp-replace": "^0.4.0",
-			"gulp-uglify": "^0.3.1",
-			"gulp-util": "^3.0.0",
-			"gulp-wrapper": "^0.1.5",
-			"jshint": "^2.5.5",
-			"jshint-stylish": "^0.4.0",
-			"mocha": "^1.21.4",
-			"node-jscover": "^0.6.8",
-			"node-jscover-coveralls": "^1.0.10",
-			"node-jscover-handler": "^1.0.3",
-			"precommit-hook": "^1.0.7",
-			"serve-index": "^1.1.6",
-			"serve-static": "^1.5.3"
-		},
-		"directories": {},
-		"dist": {
-			"key": "modulex-path/-/modulex-path-1.0.4.tgz",
-			"noattachment": false,
-			"shasum": "152e428acc1c6a9d73925305e267aabca75fee22",
-			"size": 5618,
-			"tarball": "http://registry.npm.alibaba-inc.com/modulex-path/download/modulex-path-1.0.4.tgz"
-		},
-		"engines": {
-			"node": ">=0.10"
-		},
-		"gitHead": "b4488f5b4992f9514b42f9a95144788ef9813688",
-		"homepage": "https://github.com/modulex/path",
-		"license": "MIT",
-		"maintainers": [
-			{
-				"email": "yiminghe@gmail.com",
-				"name": "yiminghe"
-			}
-		],
-		"name": "modulex-path",
-		"optionalDependencies": {},
-		"precommit": [
-			"lint"
-		],
-		"publish_time": 1425359118349,
-		"readme": "ERROR: No README data found!",
-		"repository": {
-			"type": "git",
-			"url": "git+ssh://git@github.com/modulex/path.git"
-		},
-		"scripts": {
-			"browser-test": "mocha-phantomjs http://localhost:8005/tests/runner.html",
-			"browser-test-build": "mocha-phantomjs http://localhost:8005/tests/runner.html?build",
-			"browser-test-cover": "mocha-phantomjs -R node_modules/node-jscover/lib/reporters/mocha/console http://localhost:8005/tests/runner.html?coverage",
-			"lint": "gulp lint",
-			"publish": "gulp tag",
-			"start": "node server.js"
-		},
-		"version": "1.0.4"
-	};
-
-/***/ },
-/* 87 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4799,11 +4517,11 @@
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	var _xhrTransportBase = __webpack_require__(88);
+	var _xhrTransportBase = __webpack_require__(84);
 	
 	var _xhrTransportBase2 = _interopRequireDefault(_xhrTransportBase);
 	
-	var _subDomainTransport = __webpack_require__(90);
+	var _subDomainTransport = __webpack_require__(86);
 	
 	var _subDomainTransport2 = _interopRequireDefault(_subDomainTransport);
 	
@@ -4851,7 +4569,7 @@
 	 */
 
 /***/ },
-/* 88 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4868,13 +4586,13 @@
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _querystring = __webpack_require__(75);
+	var _modulexQuerystring = __webpack_require__(75);
 	
-	var _querystring2 = _interopRequireDefault(_querystring);
+	var _modulexQuerystring2 = _interopRequireDefault(_modulexQuerystring);
 	
-	var _url = __webpack_require__(81);
+	var _modulexUrl = __webpack_require__(81);
 	
-	var _url2 = _interopRequireDefault(_url);
+	var _modulexUrl2 = _interopRequireDefault(_modulexUrl);
 	
 	var _base = __webpack_require__(4);
 	
@@ -4884,11 +4602,13 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _constants = __webpack_require__(89);
+	var _constants = __webpack_require__(85);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	// http://msdn.microsoft.com/en-us/library/cc288060(v=vs.85).aspx
+	/* eslint no-console:0 */
+	
 	var XDomainRequest_ = _utils2.default.ieMode > 7 && window.XDomainRequest;
 	var XhrTransportBase = {
 	  proto: {}
@@ -4945,7 +4665,7 @@
 	      // random timestamp is forced to fetch code file from server
 	      delete ifModifiedKey.query._ksTS;
 	    }
-	    ifModifiedKey = _url2.default.stringify(ifModifiedKey);
+	    ifModifiedKey = _modulexUrl2.default.stringify(ifModifiedKey);
 	  }
 	  return ifModifiedKey;
 	}
@@ -5040,7 +4760,7 @@
 	      var originalSentContent = sendContent;
 	      var data = {};
 	      if (originalSentContent) {
-	        data = _querystring2.default.parse(originalSentContent);
+	        data = _modulexQuerystring2.default.parse(originalSentContent);
 	      }
 	      (0, _objectAssign2.default)(data, files);
 	      sendContent = new FormData();
@@ -5199,7 +4919,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 89 */
+/* 85 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -5216,7 +4936,7 @@
 	var NO_CONTENT_CODE2 = exports.NO_CONTENT_CODE2 = 1223;
 
 /***/ },
-/* 90 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5229,15 +4949,15 @@
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _url = __webpack_require__(81);
+	var _modulexUrl = __webpack_require__(81);
 	
-	var _url2 = _interopRequireDefault(_url);
+	var _modulexUrl2 = _interopRequireDefault(_modulexUrl);
 	
 	var _objectAssign = __webpack_require__(74);
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _xhrTransportBase = __webpack_require__(88);
+	var _xhrTransportBase = __webpack_require__(84);
 	
 	var _xhrTransportBase2 = _interopRequireDefault(_xhrTransportBase);
 	
@@ -5248,7 +4968,7 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	// hostname:{iframe: , ready:}
-	var iframeMap = {};
+	var iframeMap = {}; /* eslint no-console:0 */
 	
 	_base2.default.ajaxSetup({
 	  useSubDomainProxy: '',
@@ -5308,7 +5028,7 @@
 	      iframeUri.protocol = uri.protocol;
 	      iframeUri.host = uri.host;
 	      iframeUri.pathname = proxy;
-	      iframe.src = _url2.default.stringify(iframeUri);
+	      iframe.src = _modulexUrl2.default.stringify(iframeUri);
 	    } else {
 	      iframe = iframeDesc.iframe;
 	    }
@@ -5320,7 +5040,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 91 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5341,7 +5061,7 @@
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	var _constants = __webpack_require__(89);
+	var _constants = __webpack_require__(85);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -5473,7 +5193,7 @@
 	_base2.default.setupTransport('script', ScriptTransport);
 
 /***/ },
-/* 92 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5570,7 +5290,7 @@
 	});
 
 /***/ },
-/* 93 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5579,15 +5299,15 @@
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	var _querystring = __webpack_require__(75);
+	var _modulexQuerystring = __webpack_require__(75);
 	
-	var _querystring2 = _interopRequireDefault(_querystring);
+	var _modulexQuerystring2 = _interopRequireDefault(_modulexQuerystring);
 	
 	var _objectAssign = __webpack_require__(74);
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _formSerializer = __webpack_require__(94);
+	var _formSerializer = __webpack_require__(90);
 	
 	var _formSerializer2 = _interopRequireDefault(_formSerializer);
 	
@@ -5638,7 +5358,7 @@
 	      // when FormData exists, only collect non-file type input
 	      formParam = _formSerializer2.default.getFormData(form);
 	      if (c.hasContent) {
-	        formParam = _querystring2.default.stringify(formParam, undefined, undefined, !c.traditional);
+	        formParam = _modulexQuerystring2.default.stringify(formParam, undefined, undefined, !c.traditional);
 	        if (data) {
 	          c.data += '&' + formParam;
 	        } else {
@@ -5663,7 +5383,7 @@
 	});
 
 /***/ },
-/* 94 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5672,9 +5392,9 @@
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _querystring = __webpack_require__(75);
+	var _modulexQuerystring = __webpack_require__(75);
 	
-	var _querystring2 = _interopRequireDefault(_querystring);
+	var _modulexQuerystring2 = _interopRequireDefault(_modulexQuerystring);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -5708,7 +5428,7 @@
 	   */
 	  serialize: function serialize(forms, serializeArray) {
 	    // 名值键值对序列化,数组元素名字前不加 []
-	    return _querystring2.default.stringify(FormSerializer.getFormData(forms), undefined, undefined, serializeArray || false);
+	    return _modulexQuerystring2.default.stringify(FormSerializer.getFormData(forms), undefined, undefined, serializeArray || false);
 	  },
 	  getFormData: function getFormData(forms) {
 	    var elements = [];
@@ -5770,7 +5490,7 @@
 	module.exports = FormSerializer;
 
 /***/ },
-/* 95 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5779,9 +5499,9 @@
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _querystring = __webpack_require__(75);
+	var _modulexQuerystring = __webpack_require__(75);
 	
-	var _querystring2 = _interopRequireDefault(_querystring);
+	var _modulexQuerystring2 = _interopRequireDefault(_modulexQuerystring);
 	
 	var _base = __webpack_require__(4);
 	
@@ -5791,7 +5511,7 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _constants = __webpack_require__(89);
+	var _constants = __webpack_require__(85);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -6041,7 +5761,7 @@
 	
 	    // unparam to kv map
 	    if (data) {
-	      query = _querystring2.default.parse(data);
+	      query = _modulexQuerystring2.default.parse(data);
 	    }
 	
 	    if (query) {
@@ -6074,7 +5794,7 @@
 	_base2.default.setupTransport('iframe', IframeTransport);
 
 /***/ },
-/* 96 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6087,15 +5807,17 @@
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	var _url = __webpack_require__(81);
+	var _modulexUrl = __webpack_require__(81);
 	
-	var _url2 = _interopRequireDefault(_url);
+	var _modulexUrl2 = _interopRequireDefault(_modulexUrl);
 	
-	var _constants = __webpack_require__(89);
+	var _constants = __webpack_require__(85);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	// get individual response header from response header str
+	/* eslint no-console:0 */
+	
 	var HEADER_REG = /^(.*?):[ \t]*([^\r\n]*)\r?$/mg;
 	
 	function handleResponseData(io) {
@@ -6360,7 +6082,7 @@
 	    if (search && Object.keys(uri.query).length) {
 	      search = '&' + search.substring(1);
 	    }
-	    return _url2.default.stringify(uri, !c.traditional) + search;
+	    return _modulexUrl2.default.stringify(uri, !c.traditional) + search;
 	  }
 	});
 
