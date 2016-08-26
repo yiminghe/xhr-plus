@@ -134,6 +134,24 @@ var req = io(config);
           <td>sets the `Content-Type` of the request. Eg: `application/json`</td>
         </tr>
         <tr>
+          <td>processData</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>whether format data to string</td>
+        </tr>
+        <tr>
+          <td>timeout</td>
+          <td>number</td>
+          <td></td>
+          <td>timeout by seconds</td>
+        </tr>
+        <tr>
+          <td>beforeSend</td>
+          <td>(io) => void</td>
+          <td></td>
+          <td>A function called before the request</td>
+        </tr>
+        <tr>
           <td>success</td>
           <td>(data, status, io) => void</td>
           <td></td>
@@ -196,6 +214,12 @@ catch error in promise
 ### always(data|e)
 
 always process in promise
+
+### static methods
+
+#### ajaxSetUp(config)
+
+set the default config for all requests
 
 ## Test Case
 

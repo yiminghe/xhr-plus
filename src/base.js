@@ -97,10 +97,6 @@ function ajaxSetup(c) {
 }
 
 /**
- * Return a io object and send request by config.
- *
- * @class IO
- * @extends Promise
  *
  * @cfg {String} url
  * request destination
@@ -244,14 +240,12 @@ function ajaxSetup(c) {
  * @cfg {String} password
  * a password tobe used in response to HTTP access authentication request
  *
- * @cfg {Object} xdr
- * cross domain request config object, contains sub config:
+ * @cfg {String} subDomainProxy
+ * 'force': use proxy for sub domain request even browser supports cors
+ * 'auto': only use proxy for sub domain request browser does not support cors.
+ * default to '': do not use.
  *
- *
- * xdr.subDomain
- * cross sub domain request config object
- *
- * xdr.subDomain.proxy
+ * @cfg {String} subDomainProxyUrl
  * proxy page, eg:
  * a.t.cn/a.htm send request to b.t.cn/b.htm:
  *
