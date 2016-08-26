@@ -3,15 +3,17 @@ webpackJsonp([2],{
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(94);
+	module.exports = __webpack_require__(21);
 
 
 /***/ },
 
-/***/ 94:
+/***/ 21:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /* eslint no-console:0 */
 	
 	var _xhrPlus = __webpack_require__(2);
 	
@@ -19,7 +21,7 @@ webpackJsonp([2],{
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var a = 0; /* eslint no-console:0 */
+	var a = 0;
 	
 	if (!a) {
 	  (0, _xhrPlus2.default)({
@@ -38,6 +40,13 @@ webpackJsonp([2],{
 	
 	      console.log('xhr error', args);
 	    }
+	  }).then(function (data) {
+	    console.log('promise get', data);
+	    return _extends({}, data, {
+	      url: '//github.com/yiminghe'
+	    });
+	  }).then(function (data) {
+	    console.log('promise get 2', data);
 	  });
 	}
 	
