@@ -13,6 +13,14 @@ if (!a) {
     error(...args) {
       console.log('xhr error', args);
     },
+  }).then((data) => {
+    console.log('promise get', data);
+    return {
+      ...data,
+      url: '//github.com/yiminghe',
+    };
+  }).then((data) => {
+    console.log('promise get 2', data);
   });
 }
 

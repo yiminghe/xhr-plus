@@ -51,6 +51,14 @@ io({
 });
 ```
 
+Promise support, place the following code inside your html head
+
+```html
+if(!window.Promise) {
+  document.writeln('<script src="https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"></script>');
+}
+```
+
 ## API
 
 ```js

@@ -2,7 +2,6 @@
 
 import utils from './utils';
 import querystring from 'modulex-querystring';
-import { Promise } from 'es6-promise';
 import assign from 'object-assign';
 import url from 'modulex-url';
 const rlocalProtocol = /^(?:about|app|app\-storage|.+\-extension|file|widget):$/;
@@ -421,6 +420,9 @@ function IO(c) {
 
 assign(IO.prototype, {
   getPromise() {
+    if (typeof Promise === 'undefined') {
+      throw new Error('xhr-plus needs Promise polyfill in global namespace!');
+    }
     if (!this.promise) {
       this.promise = new Promise((resolve, reject) => {
         this.__resolve = resolve;

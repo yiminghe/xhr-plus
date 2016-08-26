@@ -243,11 +243,13 @@ assign(IO.prototype,
       }
       IO.fire(handler, eventObject);
       IO.fire('complete', eventObject);
-      this.getPromise();
-      if (isSuccess) {
-        this.__resolve(this.responseData);
-      } else {
-        this.__reject(error);
+      if (typeof Promise !== 'undefined') {
+        this.getPromise();
+        if (isSuccess) {
+          this.__resolve(this.responseData);
+        } else {
+          this.__reject(error);
+        }
       }
     },
 
