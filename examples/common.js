@@ -2346,6 +2346,9 @@
 	
 	    var io = this.io;
 	    var c = io.config;
+	    if (c.beforeSendInternal) {
+	      c.beforeSendInternal.call(c.context, this, c);
+	    }
 	    var nativeXhr = this.nativeXhr;
 	    var files = c.files;
 	    var method = files ? 'post' : c.method;
@@ -2676,6 +2679,7 @@
 	    var proxy = c.subDomainProxyUrl;
 	
 	    if (iframeDesc && iframeDesc.ready) {
+	      this.window = iframeDesc.iframe.contentWindow;
 	      this.nativeXhr = _xhrTransportBase2.default.nativeXhr(0, iframeDesc.iframe.contentWindow);
 	      if (this.nativeXhr) {
 	        this.sendInternal();
