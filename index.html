@@ -7,7 +7,7 @@
   <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css" rel="stylesheet"/>
-  <title>xhr-plus@1.1.0 - xhr-plus</title>
+  <title>xhr-plus@1.2.0 - xhr-plus</title>
   <style>
     @font-face {
       font-family: octicons-anchor;
@@ -737,7 +737,7 @@
 
 <body>
 <div class="header">
-  <h1>xhr-plus@1.1.0</h1>
+  <h1>xhr-plus@1.2.0</h1>
 </div>
 <div class="examples">
   <h3>EXAMPLES</h3>
@@ -935,7 +935,9 @@ io.interceptors.response.use(<span class="hljs-function"><span class="hljs-keywo
 });</code></pre></div><p>And what&#39;s fun is you can turn a response into error</p>
 <div class="highlight"><pre><code language="js">io.interceptors.response.use(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">response</span>) </span>{
     <span class="hljs-keyword">if</span>(response.notLogin) {
-      <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.reject(<span class="hljs-string">"not login"</span>)
+        <span class="hljs-keyword">const</span> error = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'not login'</span>);
+        error.isSystemError = <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.reject(error);
     }
 });</code></pre></div><p>If you may need to remove an interceptor later you can.</p>
 <div class="highlight"><pre><code language="js"><span class="hljs-keyword">var</span> myInterceptor = io.interceptors.request.use(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{<span class="hljs-comment">/*...*/</span>});
