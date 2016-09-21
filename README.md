@@ -185,10 +185,14 @@ var req = io(config);
           <td>whether to set withCredentials</td>
         </tr>
         <tr>
-          <td>subDomainProxy</td>
-          <td>bool</td>
+          <td>useSubDomainProxy</td>
+          <td>false|'auto'|'force'</td>
           <td>false</td>
-          <td>whether use iframe proxy to request sub domain</td>
+          <td>
+              whether use iframe proxy to request sub domain,
+              note: 'auto' will only works in non-cors browser,
+              set to 'force' to force cors browser use sub domain proxy
+          </td>
         </tr>
         <tr>
           <td>subDomainProxyUrl</td>
