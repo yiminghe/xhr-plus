@@ -77,6 +77,9 @@ assign(XhrTransportBase.proto, {
   sendInternal() {
     const io = this.io;
     const c = io.config;
+    if (c.beforeSendInternal) {
+      c.beforeSendInternal.call(c.context, this, c);
+    }
     const nativeXhr = this.nativeXhr;
     const files = c.files;
     const method = files ? 'post' : c.method;

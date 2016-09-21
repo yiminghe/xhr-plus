@@ -45,6 +45,7 @@ assign(SubDomainTransport.prototype, XhrTransportBase.proto, {
     const proxy = c.subDomainProxyUrl;
 
     if (iframeDesc && iframeDesc.ready) {
+      this.window = iframeDesc.iframe.contentWindow;
       this.nativeXhr = XhrTransportBase.nativeXhr(0, iframeDesc.iframe.contentWindow);
       if (this.nativeXhr) {
         this.sendInternal();
