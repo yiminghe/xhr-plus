@@ -850,6 +850,24 @@ io({
           <td>sets the <code>Content-Type</code> of the request. Eg: <code>application/json</code></td>
         </tr>
         <tr>
+          <td>processData</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>whether format data to string</td>
+        </tr>
+        <tr>
+          <td>timeout</td>
+          <td>number</td>
+          <td></td>
+          <td>timeout by seconds</td>
+        </tr>
+        <tr>
+          <td>beforeSend</td>
+          <td>(io) =&gt; void</td>
+          <td></td>
+          <td>A function called before the request</td>
+        </tr>
+        <tr>
           <td>success</td>
           <td>(data, status, io) =&gt; void</td>
           <td></td>
@@ -899,7 +917,29 @@ io({
 <h3>then(data): Promise<a id="user-content-then(data):-promise" name="then(data):-promise" class="anchor" aria-hidden="true" href="#then(data):-promise"><span class="octicon octicon-link"></span></a></h3><p>use data in promise</p>
 <h3>catch(e:{message, status, xhr}): Promise<a id="user-content-catch(e:{message,-status,-xhr}):-promise" name="catch(e:{message,-status,-xhr}):-promise" class="anchor" aria-hidden="true" href="#catch(e:{message,-status,-xhr}):-promise"><span class="octicon octicon-link"></span></a></h3><p>catch error in promise</p>
 <h3>always(data|e)<a id="user-content-always(data|e)" name="always(data|e)" class="anchor" aria-hidden="true" href="#always(data|e)"><span class="octicon octicon-link"></span></a></h3><p>always process in promise</p>
-<h2>Test Case<a id="user-content-test-case" name="test-case" class="anchor" aria-hidden="true" href="#test-case"><span class="octicon octicon-link"></span></a></h2><div class="highlight"><pre><code language="undefined">npm test
+<h3>static methods<a id="user-content-static-methods" name="static-methods" class="anchor" aria-hidden="true" href="#static-methods"><span class="octicon octicon-link"></span></a></h3><h4>ajaxSetUp(config)<a id="user-content-ajaxsetup(config)" name="ajaxsetup(config)" class="anchor" aria-hidden="true" href="#ajaxsetup(config)"><span class="octicon octicon-link"></span></a></h4><p>set the default config for all requests</p>
+<h4>interceptors<a id="user-content-interceptors" name="interceptors" class="anchor" aria-hidden="true" href="#interceptors"><span class="octicon octicon-link"></span></a></h4><p>You can intercept requests or responses like axios.</p>
+<div class="highlight"><pre><code language="js"><span class="hljs-comment">// Add a request interceptor</span>
+io.interceptors.request.use((config) =&gt; {
+  <span class="hljs-comment">// Do something before request is sent</span>
+  <span class="hljs-keyword">return</span> config;
+});
+
+<span class="hljs-comment">// Add a response interceptor</span>
+io.interceptors.response.use(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">response</span>) </span>{
+    <span class="hljs-comment">// Do something with response data</span>
+    <span class="hljs-keyword">return</span> response;
+}, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">error</span>) </span>{
+    <span class="hljs-comment">// Do something with response error</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.reject(error);
+});</code></pre></div><p>And what&#39;s fun is you can turn a response into error</p>
+<div class="highlight"><pre><code language="js">io.interceptors.response.use(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">response</span>) </span>{
+    <span class="hljs-keyword">if</span>(response.notLogin) {
+      <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.reject(<span class="hljs-string">"not login"</span>)
+    }
+});</code></pre></div><p>If you may need to remove an interceptor later you can.</p>
+<div class="highlight"><pre><code language="js"><span class="hljs-keyword">var</span> myInterceptor = io.interceptors.request.use(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{<span class="hljs-comment">/*...*/</span>});
+io.interceptors.request.eject(myInterceptor);</code></pre></div><h2>Test Case<a id="user-content-test-case" name="test-case" class="anchor" aria-hidden="true" href="#test-case"><span class="octicon octicon-link"></span></a></h2><div class="highlight"><pre><code language="undefined">npm test
 npm run chrome-test</code></pre></div><h2>Coverage<a id="user-content-coverage" name="coverage" class="anchor" aria-hidden="true" href="#coverage"><span class="octicon octicon-link"></span></a></h2><div class="highlight"><pre><code language="undefined">npm run coverage</code></pre></div><p>open coverage/ dir</p>
 <h2>License<a id="user-content-license" name="license" class="anchor" aria-hidden="true" href="#license"><span class="octicon octicon-link"></span></a></h2><p>xhr-plus is released under the MIT license.</p>
 

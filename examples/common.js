@@ -115,19 +115,19 @@
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	__webpack_require__(10);
-	
-	__webpack_require__(14);
+	__webpack_require__(11);
 	
 	__webpack_require__(15);
 	
 	__webpack_require__(16);
 	
-	__webpack_require__(18);
+	__webpack_require__(17);
 	
 	__webpack_require__(19);
 	
-	var _formSerializer = __webpack_require__(17);
+	__webpack_require__(20);
+	
+	var _formSerializer = __webpack_require__(18);
 	
 	var _formSerializer2 = _interopRequireDefault(_formSerializer);
 	
@@ -155,6 +155,10 @@
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /* eslint no-console:0 */
 	
 	var _utils = __webpack_require__(5);
@@ -172,6 +176,10 @@
 	var _modulexUrl = __webpack_require__(8);
 	
 	var _modulexUrl2 = _interopRequireDefault(_modulexUrl);
+	
+	var _chainPromise = __webpack_require__(10);
+	
+	var _chainPromise2 = _interopRequireDefault(_chainPromise);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -267,11 +275,42 @@
 	  return c;
 	}
 	
+	var requestInterceptors = [];
+	var responseInterceptors = [];
+	
+	function useRequest(config, error) {
+	  var interceptor = {
+	    config: config,
+	    error: error
+	  };
+	  requestInterceptors.push(interceptor);
+	  return interceptor;
+	}
+	
+	function useResponse(success, error) {
+	  var interceptor = {
+	    success: success,
+	    error: error
+	  };
+	  responseInterceptors.push(interceptor);
+	  return interceptor;
+	}
+	
+	function ejectRequest(interceptor) {
+	  var index = requestInterceptors.indexOf(interceptor);
+	  if (index !== -1) {
+	    requestInterceptors.splice(index, 1);
+	  }
+	}
+	
+	function ejectResponse(interceptor) {
+	  var index = responseInterceptors.indexOf(interceptor);
+	  if (index !== -1) {
+	    responseInterceptors.splice(index, 1);
+	  }
+	}
+	
 	/**
-	 * Return a io object and send request by config.
-	 *
-	 * @class IO
-	 * @extends Promise
 	 *
 	 * @cfg {String} url
 	 * request destination
@@ -415,14 +454,12 @@
 	 * @cfg {String} password
 	 * a password tobe used in response to HTTP access authentication request
 	 *
-	 * @cfg {Object} xdr
-	 * cross domain request config object, contains sub config:
+	 * @cfg {String} subDomainProxy
+	 * 'force': use proxy for sub domain request even browser supports cors
+	 * 'auto': only use proxy for sub domain request browser does not support cors.
+	 * default to '': do not use.
 	 *
-	 *
-	 * xdr.subDomain
-	 * cross sub domain request config object
-	 *
-	 * xdr.subDomain.proxy
+	 * @cfg {String} subDomainProxyUrl
 	 * proxy page, eg:
 	 * a.t.cn/a.htm send request to b.t.cn/b.htm:
 	 *
@@ -433,157 +470,165 @@
 	 * 3. in a.htm , call <code> IO({xdr:{subDomain:{proxy:'/proxy.htm'}}}) </code>
 	 *
 	 */
-	function IO(c) {
+	function IO(config) {
 	  var _this = this;
 	
 	  if (!(this instanceof IO)) {
-	    return new IO(c);
+	    return new IO(config);
 	  }
 	
-	  this.userConfig = c;
+	  (0, _chainPromise2.default)(requestInterceptors.map(function (interceptor) {
+	    return interceptor.config;
+	  }), config, function (_, c) {
+	    _this.userConfig = c;
 	
-	  c = ajaxSetup(c);
+	    c = ajaxSetup(c);
 	
-	  (0, _objectAssign2.default)(this, {
-	    // 结构化数据，如 json
-	    responseData: null,
+	    (0, _objectAssign2.default)(_this, {
+	      // 结构化数据，如 json
+	      responseData: null,
+	      /**
+	       * config of current IO instance.
+	       * @member IO
+	       * @property config
+	       * @type Object
+	       */
+	      config: c || {},
+	      timeoutTimer: null,
+	
+	      /**
+	       * String typed data returned from server
+	       * @type String
+	       */
+	      responseText: null,
+	      /**
+	       * xml typed data returned from server
+	       * @type String
+	       */
+	      responseXML: null,
+	      responseHeadersString: '',
+	      responseHeaders: null,
+	      requestHeaders: {},
+	      /**
+	       * readyState of current request
+	       * 0: initialized
+	       * 1: send
+	       * 4: completed
+	       * @type Number
+	       */
+	      readyState: 0,
+	      state: 0,
+	      /**
+	       * HTTP statusText of current request
+	       * @type String
+	       */
+	      statusText: null,
+	      /**
+	       * HTTP Status Code of current request
+	       * eg:
+	       * 200: ok
+	       * 404: Not Found
+	       * 500: Server Error
+	       * @type String
+	       */
+	      status: 0,
+	      transport: null
+	    });
+	
+	    var TransportConstructor = void 0;
+	    var transport = void 0;
+	
 	    /**
-	     * config of current IO instance.
+	     * fired before generating request object
+	     * @event start
 	     * @member IO
-	     * @property config
-	     * @type Object
+	     * @static
+	     * @param {IO} e.io current io
 	     */
-	    config: c || {},
-	    timeoutTimer: null,
+	    IO.callPreprocessors('start', {
+	      io: _this
+	    });
+	    IO.fire('start', {
+	      io: _this
+	    });
 	
-	    /**
-	     * String typed data returned from server
-	     * @type String
-	     */
-	    responseText: null,
-	    /**
-	     * xml typed data returned from server
-	     * @type String
-	     */
-	    responseXML: null,
-	    responseHeadersString: '',
-	    responseHeaders: null,
-	    requestHeaders: {},
-	    /**
-	     * readyState of current request
-	     * 0: initialized
-	     * 1: send
-	     * 4: completed
-	     * @type Number
-	     */
-	    readyState: 0,
-	    state: 0,
-	    /**
-	     * HTTP statusText of current request
-	     * @type String
-	     */
-	    statusText: null,
-	    /**
-	     * HTTP Status Code of current request
-	     * eg:
-	     * 200: ok
-	     * 404: Not Found
-	     * 500: Server Error
-	     * @type String
-	     */
-	    status: 0,
-	    transport: null
-	  });
+	    TransportConstructor = transports[c.type[0]] || transports['*'];
+	    transport = new TransportConstructor(_this);
 	
-	  var TransportConstructor = void 0;
-	  var transport = void 0;
+	    _this.transport = transport;
 	
-	  /**
-	   * fired before generating request object
-	   * @event start
-	   * @member IO
-	   * @static
-	   * @param {IO} e.io current io
-	   */
-	  IO.callPreprocessors('start', {
-	    io: this
-	  });
-	  IO.fire('start', {
-	    io: this
-	  });
-	
-	  TransportConstructor = transports[c.type[0]] || transports['*'];
-	  transport = new TransportConstructor(this);
-	
-	  this.transport = transport;
-	
-	  if (c.contentType) {
-	    this.setRequestHeader('Content-Type', c.contentType);
-	  }
-	
-	  var type = c.type[0];
-	  var i = void 0;
-	  var timeout = c.timeout;
-	  var context = c.context;
-	  var headers = c.headers;
-	  var accepts = c.accepts;
-	
-	  // Set the Accepts header for the server, depending on the type
-	  this.setRequestHeader('Accept', type && accepts[type] ? accepts[type] + (type === '*' ? '' : ', */*; q=0.01') : accepts['*']);
-	
-	  // Check for headers option
-	  for (i in headers) {
-	    if (headers.hasOwnProperty(i)) {
-	      this.setRequestHeader(i, headers[i]);
+	    if (c.contentType) {
+	      _this.setRequestHeader('Content-Type', c.contentType);
 	    }
-	  }
 	
-	  // allow setup native listener
-	  // such as xhr.upload.addEventListener('progress', function (ev) {})
-	  if (c.beforeSend && c.beforeSend.call(context, this, c) === false) {
-	    return this;
-	  }
+	    var type = c.type[0];
+	    var i = void 0;
+	    var timeout = c.timeout;
+	    var context = c.context;
+	    var headers = c.headers;
+	    var accepts = c.accepts;
 	
-	  this.readyState = 1;
+	    // Set the Accepts header for the server, depending on the type
+	    _this.setRequestHeader('Accept', type && accepts[type] ? accepts[type] + (type === '*' ? '' : ', */*; q=0.01') : accepts['*']);
 	
-	  /**
-	   * fired before sending request
-	   * @event send
-	   * @member IO
-	   * @static
-	   * @param {IO} e.io current io
-	   */
-	  IO.callPreprocessors('send', {
-	    io: this
-	  });
-	  IO.fire('send', {
-	    io: this
-	  });
-	
-	  // Timeout
-	  if (c.async && timeout > 0) {
-	    this.timeoutTimer = setTimeout(function () {
-	      _this.abort('timeout');
-	    }, timeout * 1000);
-	  }
-	
-	  try {
-	    // flag as sending
-	    this.state = 1;
-	    transport.send();
-	  } catch (e) {
-	    console.error(e.stack || e);
-	    setTimeout(function () {
-	      throw e;
-	    }, 0);
-	    // Propagate exception as error if not done
-	    if (this.state < 2) {
-	      this._ioReady(0 - 1, e.message || 'send error');
-	      // Simply rethrow otherwise
+	    // Check for headers option
+	    for (i in headers) {
+	      if (headers.hasOwnProperty(i)) {
+	        _this.setRequestHeader(i, headers[i]);
+	      }
 	    }
-	  }
 	
-	  return this;
+	    // allow setup native listener
+	    // such as xhr.upload.addEventListener('progress', function (ev) {})
+	    if (c.beforeSend && c.beforeSend.call(context, _this, c) === false) {
+	      return _this;
+	    }
+	
+	    _this.readyState = 1;
+	
+	    /**
+	     * fired before sending request
+	     * @event send
+	     * @member IO
+	     * @static
+	     * @param {IO} e.io current io
+	     */
+	    IO.callPreprocessors('send', {
+	      io: _this
+	    });
+	    IO.fire('send', {
+	      io: _this
+	    });
+	
+	    // Timeout
+	    if (c.async && timeout > 0) {
+	      _this.timeoutTimer = setTimeout(function () {
+	        _this.abort('timeout');
+	      }, timeout * 1000);
+	    }
+	
+	    try {
+	      // flag as sending
+	      _this.state = 1;
+	      transport.send();
+	    } catch (error) {
+	      (0, _chainPromise2.default)(requestInterceptors.map(function (interceptor) {
+	        return interceptor.error;
+	      }), error, function (e) {
+	        console.error(e.stack || e);
+	        setTimeout(function () {
+	          throw e;
+	        }, 0);
+	        // Propagate exception as error if not done
+	        if (_this.state < 2) {
+	          _this._ioReady(-1, e.message || 'send error');
+	          // Simply rethrow otherwise
+	        }
+	      }, false);
+	    }
+	
+	    return _this;
+	  });
 	}
 	
 	(0, _objectAssign2.default)(IO.prototype, {
@@ -619,6 +664,19 @@
 	var events = {};
 	
 	(0, _objectAssign2.default)(IO, {
+	  interceptors: {
+	    request: {
+	      use: useRequest,
+	      eject: ejectRequest
+	    },
+	    response: {
+	      use: useResponse,
+	      eject: ejectResponse
+	    }
+	  },
+	
+	  _responseInterceptors: responseInterceptors,
+	
 	  preprocessors: preprocessors,
 	
 	  events: events,
@@ -712,7 +770,7 @@
 	  }
 	});
 	
-	module.exports = IO;
+	exports.default = IO;
 	
 	/*
 	 // !TODO
@@ -738,6 +796,8 @@
 	 2011 yiminghe@gmail.com
 	 - 借鉴 jquery，优化减少闭包使用
 	 */
+
+	module.exports = exports['default'];
 
 /***/ },
 /* 5 */
@@ -2053,6 +2113,68 @@
 
 /***/ },
 /* 10 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
+	function runFn(fn, args, next, stopAtError, done) {
+	  var ret = fn(stopAtError ? args[1] : args[0]);
+	  if (ret && ret.then) {
+	    ret.then(function (ok) {
+	      if (stopAtError === false) {
+	        done(null, ok);
+	      } else {
+	        next([null, ok]);
+	      }
+	    }, function (error) {
+	      if (stopAtError) {
+	        done(error, null);
+	      } else {
+	        next(error, null);
+	      }
+	    });
+	  } else {
+	    next([null, ret]);
+	  }
+	}
+	
+	function chainPromise(fns, arg, done) {
+	  var stopAtError = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
+	
+	  fns = fns.filter(function (f) {
+	    return !!f;
+	  });
+	  if (!fns.length) {
+	    var args = stopAtError ? [null, arg] : [arg];
+	    return done.apply(undefined, args);
+	  }
+	
+	  var index = -1;
+	
+	  function next(ret) {
+	    index++;
+	    if (index < fns.length) {
+	      var _args = stopAtError ? [null, arg] : [arg];
+	      runFn(fns[index], index === 0 ? _args : ret, next, stopAtError, done);
+	    } else {
+	      done.apply(undefined, _toConsumableArray(ret));
+	    }
+	  }
+	
+	  next();
+	}
+	
+	exports.default = chainPromise;
+	module.exports = exports['default'];
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2069,11 +2191,11 @@
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	var _xhrTransportBase = __webpack_require__(11);
+	var _xhrTransportBase = __webpack_require__(12);
 	
 	var _xhrTransportBase2 = _interopRequireDefault(_xhrTransportBase);
 	
-	var _subDomainTransport = __webpack_require__(13);
+	var _subDomainTransport = __webpack_require__(14);
 	
 	var _subDomainTransport2 = _interopRequireDefault(_subDomainTransport);
 	
@@ -2121,7 +2243,7 @@
 	 */
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2152,7 +2274,7 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _constants = __webpack_require__(12);
+	var _constants = __webpack_require__(13);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -2457,7 +2579,7 @@
 	      }, 0);
 	      nativeXhr.onreadystatechange = _utils2.default.noop;
 	      if (!abort) {
-	        io._ioReady(0 - 1, e.message || 'process error');
+	        io._ioReady(-1, e.message || 'process error');
 	      }
 	    }
 	  }
@@ -2467,7 +2589,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2484,7 +2606,7 @@
 	var NO_CONTENT_CODE2 = exports.NO_CONTENT_CODE2 = 1223;
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2505,7 +2627,7 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _xhrTransportBase = __webpack_require__(11);
+	var _xhrTransportBase = __webpack_require__(12);
 	
 	var _xhrTransportBase2 = _interopRequireDefault(_xhrTransportBase);
 	
@@ -2588,7 +2710,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2607,7 +2729,7 @@
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	var _constants = __webpack_require__(12);
+	var _constants = __webpack_require__(13);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -2739,7 +2861,7 @@
 	_base2.default.setupTransport('script', ScriptTransport);
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2836,7 +2958,7 @@
 	});
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2853,7 +2975,7 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _formSerializer = __webpack_require__(17);
+	var _formSerializer = __webpack_require__(18);
 	
 	var _formSerializer2 = _interopRequireDefault(_formSerializer);
 	
@@ -2929,7 +3051,7 @@
 	});
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3036,7 +3158,7 @@
 	module.exports = FormSerializer;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3057,7 +3179,7 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _constants = __webpack_require__(12);
+	var _constants = __webpack_require__(13);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -3340,7 +3462,7 @@
 	_base2.default.setupTransport('iframe', IframeTransport);
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3357,14 +3479,18 @@
 	
 	var _modulexUrl2 = _interopRequireDefault(_modulexUrl);
 	
-	var _constants = __webpack_require__(12);
+	var _chainPromise = __webpack_require__(10);
+	
+	var _chainPromise2 = _interopRequireDefault(_chainPromise);
+	
+	var _constants = __webpack_require__(13);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	// get individual response header from response header str
-	/* eslint no-console:0 */
+	var HEADER_REG = /^(.*?):[ \t]*([^\r\n]*)\r?$/mg; /* eslint no-console:0 */
 	
-	var HEADER_REG = /^(.*?):[ \t]*([^\r\n]*)\r?$/mg;
+	var responseInterceptors = _base2.default._responseInterceptors;
 	
 	function handleResponseData(io) {
 	  // text xml 是否原生转化支持
@@ -3534,6 +3660,8 @@
 	    return null;
 	  },
 	  _ioReady: function _ioReady(status, statusText) {
+	    var _this = this;
+	
 	    // 只能执行一次，防止重复执行
 	    // 例如完成后，调用 abort
 	
@@ -3582,37 +3710,65 @@
 	    }
 	    var context = config.context;
 	    var handler = isSuccess ? 'success' : 'error';
-	    var payload = [this.responseData, statusText, this];
-	    var error = void 0;
-	    if (!isSuccess) {
-	      error = new Error(statusText);
-	      error.xhr = this.transport.nativeXhr;
-	      error.status = status;
-	      if (config.error) {
-	        config.error.call(context, error);
-	      }
-	    } else if (config.success) {
-	      config.success.apply(context, payload);
-	    }
+	    var responseData = this.responseData;
 	
-	    var eventObject = {
-	      io: this,
-	      payload: payload,
-	      error: error
-	    };
-	    var h = config.complete;
-	    if (h) {
-	      h.apply(context, payload);
-	    }
-	    _base2.default.fire(handler, eventObject);
-	    _base2.default.fire('complete', eventObject);
-	    if (typeof Promise !== 'undefined') {
-	      this.getPromise();
-	      if (isSuccess) {
-	        this.__resolve(this.responseData);
-	      } else {
-	        this.__reject(error);
+	    var argumentError = function argumentError(_e) {
+	      var e = _e;
+	      if (!(e instanceof Error)) {
+	        e = new Error(e);
 	      }
+	      e.xhr = _this.transport.nativeXhr;
+	      e.io = _this;
+	      e.status = status;
+	      return e;
+	    };
+	
+	    var error = isSuccess ? null : argumentError(statusText);
+	
+	    var done = function done(_error, _responseData) {
+	      error = _error;
+	      if (error) {
+	        error = argumentError(error);
+	      }
+	      responseData = _responseData;
+	      var payload = [responseData, statusText, _this];
+	      if (error) {
+	        if (config.error) {
+	          config.error.call(context, error);
+	        }
+	      } else if (config.success) {
+	        config.success.apply(context, payload);
+	      }
+	
+	      var eventObject = {
+	        io: _this,
+	        payload: payload,
+	        error: error
+	      };
+	      var h = config.complete;
+	      if (h) {
+	        h.apply(context, payload);
+	      }
+	      _base2.default.fire(handler, eventObject);
+	      _base2.default.fire('complete', eventObject);
+	      if (typeof Promise !== 'undefined') {
+	        _this.getPromise();
+	        if (isSuccess) {
+	          _this.__resolve(responseData);
+	        } else {
+	          _this.__reject(error);
+	        }
+	      }
+	    };
+	
+	    if (error) {
+	      (0, _chainPromise2.default)(responseInterceptors.map(function (interceptor) {
+	        return interceptor.error;
+	      }), error, done, false);
+	    } else {
+	      (0, _chainPromise2.default)(responseInterceptors.map(function (interceptor) {
+	        return interceptor.success;
+	      }), responseData, done);
 	    }
 	  },
 	  _getUrlForSend: function _getUrlForSend() {
