@@ -3,9 +3,12 @@
 import assign from 'object-assign';
 import IO from './base';
 import url from 'modulex-url';
+import chainPromise from './chain-promise';
 import { OK_CODE, MULTIPLE_CHOICES, NOT_MODIFIED } from './constants';
+
 // get individual response header from response header str
 const HEADER_REG = /^(.*?):[ \t]*([^\r\n]*)\r?$/mg;
+const responseInterceptors = IO._responseInterceptors;
 
 function handleResponseData(io) {
   // text xml 是否原生转化支持
@@ -219,37 +222,63 @@ assign(IO.prototype,
       }
       const context = config.context;
       const handler = isSuccess ? 'success' : 'error';
-      const payload = [this.responseData, statusText, this];
-      let error;
-      if (!isSuccess) {
-        error = new Error(statusText);
-        error.xhr = this.transport.nativeXhr;
-        error.status = status;
-        if (config.error) {
-          config.error.call(context, error);
-        }
-      } else if (config.success) {
-        config.success.apply(context, payload);
-      }
+      let responseData = this.responseData;
 
-      const eventObject = {
-        io: this,
-        payload,
-        error,
-      };
-      const h = config.complete;
-      if (h) {
-        h.apply(context, payload);
-      }
-      IO.fire(handler, eventObject);
-      IO.fire('complete', eventObject);
-      if (typeof Promise !== 'undefined') {
-        this.getPromise();
-        if (isSuccess) {
-          this.__resolve(this.responseData);
-        } else {
-          this.__reject(error);
+      const argumentError = (_e) => {
+        let e = _e;
+        if (!(e instanceof Error)) {
+          e = new Error(e);
         }
+        e.xhr = this.transport.nativeXhr;
+        e.io = this;
+        e.status = status;
+        return e;
+      };
+
+      let error = isSuccess ? null : argumentError(statusText);
+
+      const done = (_error, _responseData) => {
+        error = _error;
+        if (error) {
+          error = argumentError(error);
+        }
+        responseData = _responseData;
+        const payload = [responseData, statusText, this];
+        if (error) {
+          if (config.error) {
+            config.error.call(context, error);
+          }
+        } else if (config.success) {
+          config.success.apply(context, payload);
+        }
+
+        const eventObject = {
+          io: this,
+          payload,
+          error,
+        };
+        const h = config.complete;
+        if (h) {
+          h.apply(context, payload);
+        }
+        IO.fire(handler, eventObject);
+        IO.fire('complete', eventObject);
+        if (typeof Promise !== 'undefined') {
+          this.getPromise();
+          if (isSuccess) {
+            this.__resolve(responseData);
+          } else {
+            this.__reject(error);
+          }
+        }
+      };
+
+      if (error) {
+        chainPromise(responseInterceptors.map(interceptor => interceptor.error),
+          error, done, false);
+      } else {
+        chainPromise(responseInterceptors.map(interceptor => interceptor.success),
+          responseData, done);
       }
     },
 

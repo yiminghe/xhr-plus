@@ -10,7 +10,7 @@ import expect from 'expect.js';
 import isPhantomjs from './isPhantomjs';
 
 if (!isPhantomjs) {
-  describe('io upload', () => {
+  describe('io upload', function run() {
     this.timeout(5000);
 
     it('should abort for form file upload', (done) => {

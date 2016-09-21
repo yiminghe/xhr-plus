@@ -293,14 +293,14 @@ describe('Advanced IO', () => {
           method: 'post',
           type: 'json',
           data: {
-            test2: ['t2'],
+            test2: ['t2', 't3'],
             test3: 't4',
           },
           traditional: true,
           complete(data) {
-            expect(data.test).to.eql(['t1']);
-            expect(data.test4).to.eql(['t6']);
-            expect(data.test2).to.eql(['t2']);
+            expect(data.test).to.eql('t1');
+            expect(data.test4).to.eql('t6');
+            expect(data.test2).to.eql(['t2', 't3']);
             expect(data.test3).to.eql('t4');
             expect(data.test5).to.eql('t8');
             f.remove();

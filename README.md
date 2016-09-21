@@ -221,6 +221,49 @@ always process in promise
 
 set the default config for all requests
 
+#### interceptors
+
+You can intercept requests or responses like axios.
+
+```js
+// Add a request interceptor
+io.interceptors.request.use((config) => {
+  // Do something before request is sent
+  return config;
+});
+
+// Add a response interceptor
+io.interceptors.response.use(function (response) {
+    // Do something with response data
+    return response;
+}, function (error) {
+    // Do something with response error
+    return Promise.reject(error);
+});
+```
+
+And what's fun is you can turn a response into error
+
+```js
+io.interceptors.response.use(function (response) {
+    if(response.notLogin) {
+        const error = new Error('not login');
+        error.isSystemError = true;
+        return Promise.reject(error);
+    }
+});
+```
+
+If you may need to remove an interceptor later you can.
+
+```js
+var myInterceptor = io.interceptors.request.use(function () {/*...*/});
+io.interceptors.request.eject(myInterceptor);
+```
+
+
+
+
 ## Test Case
 
 ```

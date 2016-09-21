@@ -310,7 +310,7 @@ assign(XhrTransportBase.proto, {
       }, 0);
       nativeXhr.onreadystatechange = utils.noop;
       if (!abort) {
-        io._ioReady(0 - 1, e.message || 'process error');
+        io._ioReady(-1, e.message || 'process error');
       }
     }
   },

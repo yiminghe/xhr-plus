@@ -323,7 +323,7 @@ describe('basic', () => {
         url: '/tests/data/interface.jss?type=post&dataType=script',
         type: 'script',
         success(data) {
-          expect(data).to.be('const globalScriptTest = 500;');
+          expect(data).to.be('window.globalScriptTest = 500;');
           expect(window.globalScriptTest).to.be(500);
           try {
             delete window.globalScriptTest;
@@ -344,7 +344,7 @@ describe('basic', () => {
         '&dataType=script' +
         '&contentType=text/javascript',
         success(data) {
-          expect(data).to.be('const globalScriptTest = 500;');
+          expect(data).to.be('window.globalScriptTest = 500;');
           expect(window.globalScriptTest).to.be(500);
           try {
             delete window.globalScriptTest;
@@ -478,7 +478,7 @@ describe('basic', () => {
         type: 'script',
         success(d) {
           expect(window.globalScriptTest).to.be(200);
-          expect(d).to.be('const globalScriptTest = 200;');
+          expect(d).to.be('window.globalScriptTest = 200;');
           done();
         },
       });

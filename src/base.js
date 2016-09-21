@@ -4,6 +4,8 @@ import utils from './utils';
 import querystring from 'modulex-querystring';
 import assign from 'object-assign';
 import url from 'modulex-url';
+import chainPromise from './chain-promise';
+
 const rlocalProtocol = /^(?:about|app|app\-storage|.+\-extension|file|widget):$/;
 const rspace = /\s+/;
 function mirror(s) {
@@ -94,6 +96,41 @@ function ajaxSetup(c) {
     }
   }
   return c;
+}
+
+const requestInterceptors = [];
+const responseInterceptors = [];
+
+function useRequest(config, error) {
+  const interceptor = {
+    config,
+    error,
+  };
+  requestInterceptors.push(interceptor);
+  return interceptor;
+}
+
+function useResponse(success, error) {
+  const interceptor = {
+    success,
+    error,
+  };
+  responseInterceptors.push(interceptor);
+  return interceptor;
+}
+
+function ejectRequest(interceptor) {
+  const index = requestInterceptors.indexOf(interceptor);
+  if (index !== -1) {
+    requestInterceptors.splice(index, 1);
+  }
+}
+
+function ejectResponse(interceptor) {
+  const index = responseInterceptors.indexOf(interceptor);
+  if (index !== -1) {
+    responseInterceptors.splice(index, 1);
+  }
 }
 
 /**
@@ -256,160 +293,164 @@ function ajaxSetup(c) {
  * 3. in a.htm , call <code> IO({xdr:{subDomain:{proxy:'/proxy.htm'}}}) </code>
  *
  */
-function IO(c) {
+function IO(config) {
   if (!(this instanceof IO)) {
-    return new IO(c);
+    return new IO(config);
   }
 
-  this.userConfig = c;
+  chainPromise(requestInterceptors.map(interceptor => interceptor.config), config, (_, c) => {
+    this.userConfig = c;
 
-  c = ajaxSetup(c);
+    c = ajaxSetup(c);
 
-  assign(this, {
-    // 结构化数据，如 json
-    responseData: null,
+    assign(this, {
+      // 结构化数据，如 json
+      responseData: null,
+      /**
+       * config of current IO instance.
+       * @member IO
+       * @property config
+       * @type Object
+       */
+      config: c || {},
+      timeoutTimer: null,
+
+      /**
+       * String typed data returned from server
+       * @type String
+       */
+      responseText: null,
+      /**
+       * xml typed data returned from server
+       * @type String
+       */
+      responseXML: null,
+      responseHeadersString: '',
+      responseHeaders: null,
+      requestHeaders: {},
+      /**
+       * readyState of current request
+       * 0: initialized
+       * 1: send
+       * 4: completed
+       * @type Number
+       */
+      readyState: 0,
+      state: 0,
+      /**
+       * HTTP statusText of current request
+       * @type String
+       */
+      statusText: null,
+      /**
+       * HTTP Status Code of current request
+       * eg:
+       * 200: ok
+       * 404: Not Found
+       * 500: Server Error
+       * @type String
+       */
+      status: 0,
+      transport: null,
+    });
+
+    let TransportConstructor;
+    let transport;
+
     /**
-     * config of current IO instance.
+     * fired before generating request object
+     * @event start
      * @member IO
-     * @property config
-     * @type Object
+     * @static
+     * @param {IO} e.io current io
      */
-    config: c || {},
-    timeoutTimer: null,
+    IO.callPreprocessors('start', {
+      io: this,
+    });
+    IO.fire('start', {
+      io: this,
+    });
 
-    /**
-     * String typed data returned from server
-     * @type String
-     */
-    responseText: null,
-    /**
-     * xml typed data returned from server
-     * @type String
-     */
-    responseXML: null,
-    responseHeadersString: '',
-    responseHeaders: null,
-    requestHeaders: {},
-    /**
-     * readyState of current request
-     * 0: initialized
-     * 1: send
-     * 4: completed
-     * @type Number
-     */
-    readyState: 0,
-    state: 0,
-    /**
-     * HTTP statusText of current request
-     * @type String
-     */
-    statusText: null,
-    /**
-     * HTTP Status Code of current request
-     * eg:
-     * 200: ok
-     * 404: Not Found
-     * 500: Server Error
-     * @type String
-     */
-    status: 0,
-    transport: null,
-  });
+    TransportConstructor = transports[c.type[0]] || transports['*'];
+    transport = new TransportConstructor(this);
 
-  let TransportConstructor;
-  let transport;
+    this.transport = transport;
 
-  /**
-   * fired before generating request object
-   * @event start
-   * @member IO
-   * @static
-   * @param {IO} e.io current io
-   */
-  IO.callPreprocessors('start', {
-    io: this,
-  });
-  IO.fire('start', {
-    io: this,
-  });
-
-  TransportConstructor = transports[c.type[0]] || transports['*'];
-  transport = new TransportConstructor(this);
-
-  this.transport = transport;
-
-  if (c.contentType) {
-    this.setRequestHeader('Content-Type', c.contentType);
-  }
-
-  const type = c.type[0];
-  let i;
-  const timeout = c.timeout;
-  const context = c.context;
-  const headers = c.headers;
-  const accepts = c.accepts;
-
-  // Set the Accepts header for the server, depending on the type
-  this.setRequestHeader(
-    'Accept',
-    type && accepts[type] ?
-    accepts[type] + (type === '*' ? '' : ', */*; q=0.01') :
-      accepts['*']
-  );
-
-  // Check for headers option
-  for (i in headers) {
-    if (headers.hasOwnProperty(i)) {
-      this.setRequestHeader(i, headers[i]);
+    if (c.contentType) {
+      this.setRequestHeader('Content-Type', c.contentType);
     }
-  }
 
-  // allow setup native listener
-  // such as xhr.upload.addEventListener('progress', function (ev) {})
-  if (c.beforeSend && (c.beforeSend.call(context, this, c) === false)) {
+    const type = c.type[0];
+    let i;
+    const timeout = c.timeout;
+    const context = c.context;
+    const headers = c.headers;
+    const accepts = c.accepts;
+
+    // Set the Accepts header for the server, depending on the type
+    this.setRequestHeader(
+      'Accept',
+      type && accepts[type] ?
+      accepts[type] + (type === '*' ? '' : ', */*; q=0.01') :
+        accepts['*']
+    );
+
+    // Check for headers option
+    for (i in headers) {
+      if (headers.hasOwnProperty(i)) {
+        this.setRequestHeader(i, headers[i]);
+      }
+    }
+
+    // allow setup native listener
+    // such as xhr.upload.addEventListener('progress', function (ev) {})
+    if (c.beforeSend && (c.beforeSend.call(context, this, c) === false)) {
+      return this;
+    }
+
+    this.readyState = 1;
+
+    /**
+     * fired before sending request
+     * @event send
+     * @member IO
+     * @static
+     * @param {IO} e.io current io
+     */
+    IO.callPreprocessors('send', {
+      io: this,
+    });
+    IO.fire('send', {
+      io: this,
+    });
+
+    // Timeout
+    if (c.async && timeout > 0) {
+      this.timeoutTimer = setTimeout(() => {
+        this.abort('timeout');
+      }, timeout * 1000);
+    }
+
+    try {
+      // flag as sending
+      this.state = 1;
+      transport.send();
+    } catch (error) {
+      chainPromise(requestInterceptors.map(interceptor => interceptor.error), error, (e) => {
+        console.error(e.stack || e);
+        setTimeout(() => {
+          throw e;
+        }, 0);
+        // Propagate exception as error if not done
+        if (this.state < 2) {
+          this._ioReady(-1, e.message || 'send error');
+          // Simply rethrow otherwise
+        }
+      }, false);
+    }
+
     return this;
-  }
-
-  this.readyState = 1;
-
-  /**
-   * fired before sending request
-   * @event send
-   * @member IO
-   * @static
-   * @param {IO} e.io current io
-   */
-  IO.callPreprocessors('send', {
-    io: this,
   });
-  IO.fire('send', {
-    io: this,
-  });
-
-  // Timeout
-  if (c.async && timeout > 0) {
-    this.timeoutTimer = setTimeout(() => {
-      this.abort('timeout');
-    }, timeout * 1000);
-  }
-
-  try {
-    // flag as sending
-    this.state = 1;
-    transport.send();
-  } catch (e) {
-    console.error(e.stack || e);
-    setTimeout(() => {
-      throw e;
-    }, 0);
-    // Propagate exception as error if not done
-    if (this.state < 2) {
-      this._ioReady(0 - 1, e.message || 'send error');
-      // Simply rethrow otherwise
-    }
-  }
-
-  return this;
 }
 
 assign(IO.prototype, {
@@ -443,6 +484,19 @@ const preprocessors = {};
 const events = {};
 
 assign(IO, {
+  interceptors: {
+    request: {
+      use: useRequest,
+      eject: ejectRequest,
+    },
+    response: {
+      use: useResponse,
+      eject: ejectResponse,
+    },
+  },
+
+  _responseInterceptors: responseInterceptors,
+
   preprocessors,
 
   events,
@@ -536,7 +590,7 @@ assign(IO, {
   },
 });
 
-module.exports = IO;
+export default IO;
 
 /*
  // !TODO

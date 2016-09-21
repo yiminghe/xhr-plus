@@ -41,9 +41,9 @@ module.exports = function*() {
     if (t) {
       dataStr = `${t}(${dataStr});`;
     } else if (this.method === 'POST' && query.dataType === 'script') {
-      dataStr = 'const globalScriptTest = 500;';
+      dataStr = 'window.globalScriptTest = 500;';
     } else if (query.dataType === 'script') {
-      dataStr = 'const globalScriptTest = 200;';
+      dataStr = 'window.globalScriptTest = 200;';
     }
 
     this.body = (dataStr);
