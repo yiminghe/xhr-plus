@@ -1,5 +1,8 @@
 # History
 ----
+## 1.3.0 / 2016-10-12
+
+- jsonp option name change: jsonp ->jsonpCallback,  jsonpCallback -> jsonpCallbackName
 
 ## 1.2.0 / 2016-09-21
 

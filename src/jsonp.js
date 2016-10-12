@@ -1,8 +1,8 @@
 import utils from './utils';
 import IO from './base';
 IO.ajaxSetup({
-  jsonp: 'callback',
-  jsonpCallback() {
+  jsonpCallback: 'callback',
+  jsonpCallbackName() {
     // 不使用 now() ，极端情况下可能重复
     return utils.guid('jsonp');
   },
@@ -16,17 +16,17 @@ IO.addPreprocessor('start', (e) => {
     // https://github.com/kissyteam/kissy/issues/394
     delete c.contentType;
     let response;
-    const cJsonpCallback = c.jsonpCallback;
+    const cJsonpCallbackName = c.jsonpCallbackName;
     let converters;
-    const jsonpCallback = typeof cJsonpCallback === 'function' ?
-      cJsonpCallback() :
-      cJsonpCallback;
-    const previous = window[jsonpCallback];
+    const jsonpCallbackName = typeof cJsonpCallbackName === 'function' ?
+      cJsonpCallbackName() :
+      cJsonpCallbackName;
+    const previous = window[jsonpCallbackName];
 
-    c.uri.query[c.jsonp] = jsonpCallback;
+    c.uri.query[c.jsonpCallback] = jsonpCallbackName;
 
     // build temporary JSONP function
-    window[jsonpCallback] = (...args) => {
+    window[jsonpCallbackName] = (...args) => {
       // 使用数组，区别：故意调用了 jsonpCallback(undefined) 与 根本没有调用
       // jsonp 返回了数组
       let r = args;
@@ -39,10 +39,10 @@ IO.addPreprocessor('start', (e) => {
 
     // cleanup whether success or failure
     io.always(() => {
-      window[jsonpCallback] = previous;
+      window[jsonpCallbackName] = previous;
       if (previous === undefined) {
         try {
-          delete window[jsonpCallback];
+          delete window[jsonpCallbackName];
         } catch (ee) {
           // empty
         }
@@ -65,7 +65,7 @@ IO.addPreprocessor('start', (e) => {
     converters.script.json = () => {
       if (!response) {
         // notify event on production mode
-        throw new Error(`not call jsonpCallback: ${jsonpCallback}`);
+        throw new Error(`not call jsonpCallback: ${jsonpCallbackName}`);
       }
       return response[0];
     };

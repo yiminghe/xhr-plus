@@ -129,7 +129,7 @@ describe('basic', () => {
           done();
         },
         type: 'jsonp',
-        jsonp: 'customCallback',
+        jsonpCallback: 'customCallback',
       });
     });
 
