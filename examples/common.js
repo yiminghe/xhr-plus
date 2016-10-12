@@ -2881,8 +2881,8 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	_base2.default.ajaxSetup({
-	  jsonp: 'callback',
-	  jsonpCallback: function jsonpCallback() {
+	  jsonpCallback: 'callback',
+	  jsonpCallbackName: function jsonpCallbackName() {
 	    // 不使用 now() ，极端情况下可能重复
 	    return _utils2.default.guid('jsonp');
 	  }
@@ -2897,15 +2897,15 @@
 	      // https://github.com/kissyteam/kissy/issues/394
 	      delete c.contentType;
 	      var response = void 0;
-	      var cJsonpCallback = c.jsonpCallback;
+	      var cJsonpCallbackName = c.jsonpCallbackName;
 	      var converters = void 0;
-	      var jsonpCallback = typeof cJsonpCallback === 'function' ? cJsonpCallback() : cJsonpCallback;
-	      var previous = window[jsonpCallback];
+	      var jsonpCallbackName = typeof cJsonpCallbackName === 'function' ? cJsonpCallbackName() : cJsonpCallbackName;
+	      var previous = window[jsonpCallbackName];
 	
-	      c.uri.query[c.jsonp] = jsonpCallback;
+	      c.uri.query[c.jsonpCallback] = jsonpCallbackName;
 	
 	      // build temporary JSONP function
-	      window[jsonpCallback] = function () {
+	      window[jsonpCallbackName] = function () {
 	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
 	          args[_key] = arguments[_key];
 	        }
@@ -2922,10 +2922,10 @@
 	
 	      // cleanup whether success or failure
 	      io.always(function () {
-	        window[jsonpCallback] = previous;
+	        window[jsonpCallbackName] = previous;
 	        if (previous === undefined) {
 	          try {
-	            delete window[jsonpCallback];
+	            delete window[jsonpCallbackName];
 	          } catch (ee) {
 	            // empty
 	          }
@@ -2948,7 +2948,7 @@
 	      converters.script.json = function () {
 	        if (!response) {
 	          // notify event on production mode
-	          throw new Error('not call jsonpCallback: ' + jsonpCallback);
+	          throw new Error('not call jsonpCallback: ' + jsonpCallbackName);
 	        }
 	        return response[0];
 	      };

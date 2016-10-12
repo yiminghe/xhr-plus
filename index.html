@@ -7,7 +7,7 @@
   <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css" rel="stylesheet"/>
-  <title>xhr-plus@1.2.1 - xhr-plus</title>
+  <title>xhr-plus@1.3.0 - xhr-plus</title>
   <style>
     @font-face {
       font-family: octicons-anchor;
@@ -737,7 +737,7 @@
 
 <body>
 <div class="header">
-  <h1>xhr-plus@1.2.1</h1>
+  <h1>xhr-plus@1.3.0</h1>
 </div>
 <div class="examples">
   <h3>EXAMPLES</h3>
@@ -781,9 +781,11 @@ io({
 }).catch(e =&gt; {
 
 });</code></pre></div><p>Promise support, place the following code inside your html head</p>
-<div class="highlight"><pre><code language="html">if(!window.Promise) {
-  document.writeln('<span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>');
-}</code></pre></div><h2>API<a id="user-content-api" name="api" class="anchor" aria-hidden="true" href="#api"><span class="octicon octicon-link"></span></a></h2><div class="highlight"><pre><code language="js"><span class="hljs-keyword">var</span> req = io(config);
+<div class="highlight"><pre><code language="html"><span class="hljs-tag">&lt;<span class="hljs-title">script</span>&gt;</span><span class="javascript">
+  <span class="hljs-keyword">if</span>(!<span class="hljs-built_in">window</span>.Promise) {
+    <span class="hljs-built_in">document</span>.writeln(<span class="hljs-string">'&lt;script src="https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"'</span>+<span class="hljs-string">'&gt;'</span>+<span class="hljs-string">'&lt;'</span>+<span class="hljs-string">'/'</span>+<span class="hljs-string">'script&gt;'</span>);
+  }
+</span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></code></pre></div><h2>API<a id="user-content-api" name="api" class="anchor" aria-hidden="true" href="#api"><span class="octicon octicon-link"></span></a></h2><div class="highlight"><pre><code language="js"><span class="hljs-keyword">var</span> req = io(config);
 <span class="hljs-comment">// req.abort();</span></code></pre></div><h3>config<a id="user-content-config" name="config" class="anchor" aria-hidden="true" href="#config"><span class="octicon octicon-link"></span></a></h3><table class="table table-bordered table-striped">
     <thead>
     <tr>
@@ -899,10 +901,14 @@ io({
           <td>whether to set withCredentials</td>
         </tr>
         <tr>
-          <td>subDomainProxy</td>
-          <td>bool</td>
+          <td>useSubDomainProxy</td>
+          <td>false|&#39;auto&#39;|&#39;force&#39;</td>
           <td>false</td>
-          <td>whether use iframe proxy to request sub domain</td>
+          <td>
+              whether use iframe proxy to request sub domain,
+              note: &#39;auto&#39; will only works in non-cors browser,
+              set to &#39;force&#39; to force cors browser use sub domain proxy
+          </td>
         </tr>
         <tr>
           <td>subDomainProxyUrl</td>
