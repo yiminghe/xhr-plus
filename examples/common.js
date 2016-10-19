@@ -117,17 +117,17 @@
 	
 	__webpack_require__(11);
 	
-	__webpack_require__(15);
-	
 	__webpack_require__(16);
 	
 	__webpack_require__(17);
 	
-	__webpack_require__(19);
+	__webpack_require__(18);
 	
 	__webpack_require__(20);
 	
-	var _formSerializer = __webpack_require__(18);
+	__webpack_require__(21);
+	
+	var _formSerializer = __webpack_require__(19);
 	
 	var _formSerializer2 = _interopRequireDefault(_formSerializer);
 	
@@ -2195,7 +2195,7 @@
 	
 	var _xhrTransportBase2 = _interopRequireDefault(_xhrTransportBase);
 	
-	var _subDomainTransport = __webpack_require__(14);
+	var _subDomainTransport = __webpack_require__(15);
 	
 	var _subDomainTransport2 = _interopRequireDefault(_subDomainTransport);
 	
@@ -2276,6 +2276,10 @@
 	
 	var _constants = __webpack_require__(13);
 	
+	var _sendMixin = __webpack_require__(14);
+	
+	var _sendMixin2 = _interopRequireDefault(_sendMixin);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	// http://msdn.microsoft.com/en-us/library/cc288060(v=vs.85).aspx
@@ -2340,15 +2344,13 @@
 	  return ifModifiedKey;
 	}
 	
-	(0, _objectAssign2.default)(XhrTransportBase.proto, {
+	(0, _objectAssign2.default)(XhrTransportBase.proto, _sendMixin2.default, {
 	  sendInternal: function sendInternal() {
 	    var _this = this;
 	
+	    this.callBeforeSendInternal();
 	    var io = this.io;
 	    var c = io.config;
-	    if (c.beforeSendInternal) {
-	      c.beforeSendInternal.call(c.context, this, c);
-	    }
 	    var nativeXhr = this.nativeXhr;
 	    var files = c.files;
 	    var method = files ? 'post' : c.method;
@@ -2471,11 +2473,6 @@
 	        };
 	      }
 	    }
-	  },
-	
-	  // 由 io.abort 调用，自己不可以调用 io.abort
-	  abort: function abort() {
-	    this._callback(0, 1);
 	  },
 	  _callback: function _callback(event, abort) {
 	    // Firefox throws exceptions when accessing properties
@@ -2610,6 +2607,32 @@
 
 /***/ },
 /* 14 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = {
+	  callBeforeSendInternal: function callBeforeSendInternal() {
+	    var io = this.io;
+	    var c = io.config;
+	    if (c.beforeSendInternal) {
+	      c.beforeSendInternal.call(c.context, this, c);
+	    }
+	  },
+	
+	
+	  // 由 io.abort 调用，自己不可以调用 io.abort
+	  abort: function abort() {
+	    this._callback(0, 1);
+	  }
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2714,7 +2737,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2734,6 +2757,10 @@
 	var _base2 = _interopRequireDefault(_base);
 	
 	var _constants = __webpack_require__(13);
+	
+	var _sendMixin = __webpack_require__(14);
+	
+	var _sendMixin2 = _interopRequireDefault(_sendMixin);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -2822,12 +2849,13 @@
 	  return this;
 	}
 	
-	(0, _objectAssign2.default)(ScriptTransport.prototype, {
+	(0, _objectAssign2.default)(ScriptTransport.prototype, _sendMixin2.default, {
 	  send: function send() {
 	    var self = this;
-	    var io = this.io;
+	    self.callBeforeSendInternal();
+	    var io = self.io;
 	    var c = io.config;
-	    this.script = getScript(io._getUrlForSend(), {
+	    self.script = getScript(io._getUrlForSend(), {
 	      charset: c.scriptCharset,
 	      success: function success() {
 	        self._callback('success');
@@ -2856,16 +2884,13 @@
 	      // 非 ie<9 可以判断出来
 	      io._ioReady(_constants.ERROR_CODE, 'script error');
 	    }
-	  },
-	  abort: function abort() {
-	    this._callback(0, 1);
 	  }
 	});
 	
 	_base2.default.setupTransport('script', ScriptTransport);
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2962,7 +2987,7 @@
 	});
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2979,7 +3004,7 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _formSerializer = __webpack_require__(18);
+	var _formSerializer = __webpack_require__(19);
 	
 	var _formSerializer2 = _interopRequireDefault(_formSerializer);
 	
@@ -3055,7 +3080,7 @@
 	});
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3162,7 +3187,7 @@
 	module.exports = FormSerializer;
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3402,6 +3427,7 @@
 	  send: function send() {
 	    var _this2 = this;
 	
+	    this.callBeforeSendInternal();
 	    var io = this.io;
 	    var c = io.config;
 	    var fields = void 0;
@@ -3466,7 +3492,7 @@
 	_base2.default.setupTransport('iframe', IframeTransport);
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
