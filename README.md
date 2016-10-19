@@ -121,7 +121,7 @@ var req = io(config);
           <td>traditional</td>
           <td>bool</td>
           <td>false</td>
-          <td>whether add [] to array data key</td>
+          <td>whether add [] to array data key (if false then add [])</td>
         </tr>
         <tr>
           <td>headers</td>

@@ -6,6 +6,8 @@ import urlUtils from 'modulex-url';
 import IO from './base';
 import assign from 'object-assign';
 import { OK_CODE, NO_CONTENT_CODE, NOT_FOUND_CODE, NO_CONTENT_CODE2 } from './constants';
+import sendMixin from './send-mixin';
+
 // http://msdn.microsoft.com/en-us/library/cc288060(v=vs.85).aspx
 const XDomainRequest_ = utils.ieMode > 7 && window.XDomainRequest;
 const XhrTransportBase = {
@@ -73,13 +75,11 @@ function getIfModifiedKey(c) {
   return ifModifiedKey;
 }
 
-assign(XhrTransportBase.proto, {
+assign(XhrTransportBase.proto, sendMixin, {
   sendInternal() {
+    this.callBeforeSendInternal();
     const io = this.io;
     const c = io.config;
-    if (c.beforeSendInternal) {
-      c.beforeSendInternal.call(c.context, this, c);
-    }
     const nativeXhr = this.nativeXhr;
     const files = c.files;
     const method = files ? 'post' : c.method;
@@ -202,10 +202,6 @@ assign(XhrTransportBase.proto, {
         };
       }
     }
-  },
-  // 由 io.abort 调用，自己不可以调用 io.abort
-  abort() {
-    this._callback(0, 1);
   },
 
   _callback(event, abort) {

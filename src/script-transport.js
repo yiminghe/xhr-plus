@@ -2,6 +2,7 @@ import utils from './utils';
 import assign from 'object-assign';
 import IO from './base';
 import { OK_CODE, ERROR_CODE } from './constants';
+import sendMixin from './send-mixin';
 
 IO.ajaxSetup({
   accepts: {
@@ -93,12 +94,13 @@ function ScriptTransport(io) {
   return this;
 }
 
-assign(ScriptTransport.prototype, {
+assign(ScriptTransport.prototype, sendMixin, {
   send() {
     const self = this;
-    const io = this.io;
+    self.callBeforeSendInternal();
+    const io = self.io;
     const c = io.config;
-    this.script = getScript(io._getUrlForSend(), {
+    self.script = getScript(io._getUrlForSend(), {
       charset: c.scriptCharset,
       success() {
         self._callback('success');
@@ -126,10 +128,6 @@ assign(ScriptTransport.prototype, {
       // 非 ie<9 可以判断出来
       io._ioReady(ERROR_CODE, 'script error');
     }
-  },
-
-  abort() {
-    this._callback(0, 1);
   },
 });
 

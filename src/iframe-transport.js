@@ -223,6 +223,7 @@ function IframeTransport(io) {
 
 assign(IframeTransport.prototype, {
   send() {
+    this.callBeforeSendInternal();
     const io = this.io;
     const c = io.config;
     let fields;
