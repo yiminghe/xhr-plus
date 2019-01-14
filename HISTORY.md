@@ -1,5 +1,10 @@
 # History
 ----
+
+## 1.4.0 / 2019-01-14
+
+- throw error when parse invalid data
+
 ## 1.3.0 / 2016-10-12
 
 - jsonp option name change: jsonp ->jsonpCallback,  jsonpCallback -> jsonpCallbackName
