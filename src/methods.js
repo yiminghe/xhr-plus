@@ -86,7 +86,12 @@ function handleResponseData(io) {
     if (!converter) {
       throw new Error(`no covert for ${prevType} => ${type0}`);
     }
-    responseData = converter(responseData);
+
+    try {
+      responseData = converter(responseData);
+    } catch(e) {
+      throw new Error(`converter failed from data => ${responseData}`);
+    }
 
     prevType = type0;
   }
