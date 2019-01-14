@@ -1,15 +1,15 @@
 webpackJsonp([2],{
 
 /***/ 0:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(23);
 
 
-/***/ },
+/***/ }),
 
 /***/ 23:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -109,7 +109,7 @@ webpackJsonp([2],{
 	  }
 	});
 
-/***/ }
+/***/ })
 
 });
 //# sourceMappingURL=simple.js.map

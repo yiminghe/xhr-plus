@@ -12,7 +12,9 @@
 /******/ 			installedChunks[chunkId] = 0;
 /******/ 		}
 /******/ 		for(moduleId in moreModules) {
-/******/ 			modules[moduleId] = moreModules[moduleId];
+/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
+/******/ 				modules[moduleId] = moreModules[moduleId];
+/******/ 			}
 /******/ 		}
 /******/ 		if(parentJsonpFunction) parentJsonpFunction(chunkIds, moreModules);
 /******/ 		while(callbacks.length)
@@ -95,15 +97,15 @@
 /* 0 */,
 /* 1 */,
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	module.exports = __webpack_require__(3);
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -149,9 +151,9 @@
 	exports.default = _base2.default;
 	module.exports = exports['default'];
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -159,7 +161,7 @@
 	  value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /* eslint no-console:0 */
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /* eslint no-console:0 */
 	
 	var _utils = __webpack_require__(5);
 	
@@ -799,9 +801,9 @@
 
 	module.exports = exports['default'];
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -809,7 +811,7 @@
 	  value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /* eslint no-nested-ternary:0, no-use-before-define:0 */
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /* eslint no-nested-ternary:0, no-use-before-define:0 */
 	
 	
 	var _objectAssign = __webpack_require__(6);
@@ -1053,12 +1055,10 @@
 	    }
 	
 	    if (wl && typeof wl !== 'function') {
-	      (function () {
-	        var originalWl = wl;
-	        wl = function wl(name, val) {
-	          return originalWl.indexOf(name) !== -1 ? val : undefined;
-	        };
-	      })();
+	      var originalWl = wl;
+	      wl = function wl(name, val) {
+	        return originalWl.indexOf(name) !== -1 ? val : undefined;
+	      };
 	    }
 	
 	    if (ov === undefined) {
@@ -1329,12 +1329,19 @@
 	exports.default = utils;
 	module.exports = exports['default'];
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
+	/*
+	object-assign
+	(c) Sindre Sorhus
+	@license MIT
+	*/
+	
 	'use strict';
 	/* eslint-disable no-unused-vars */
+	var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 	var hasOwnProperty = Object.prototype.hasOwnProperty;
 	var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 	
@@ -1355,7 +1362,7 @@
 			// Detect buggy property enumeration order in older V8 versions.
 	
 			// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-			var test1 = new String('abc');  // eslint-disable-line
+			var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
 			test1[5] = 'de';
 			if (Object.getOwnPropertyNames(test1)[0] === '5') {
 				return false;
@@ -1384,7 +1391,7 @@
 			}
 	
 			return true;
-		} catch (e) {
+		} catch (err) {
 			// We don't expect any of the above to throw, but better to be safe.
 			return false;
 		}
@@ -1404,8 +1411,8 @@
 				}
 			}
 	
-			if (Object.getOwnPropertySymbols) {
-				symbols = Object.getOwnPropertySymbols(from);
+			if (getOwnPropertySymbols) {
+				symbols = getOwnPropertySymbols(from);
 				for (var i = 0; i < symbols.length; i++) {
 					if (propIsEnumerable.call(from, symbols[i])) {
 						to[symbols[i]] = from[symbols[i]];
@@ -1418,9 +1425,9 @@
 	};
 
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * utilities for dealing with query strings.
@@ -1568,9 +1575,9 @@
 	    }
 	};
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * @ignore
@@ -1885,9 +1892,9 @@
 	 - same origin: http://tools.ietf.org/html/rfc6454
 	 */
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/**
 	 * @ignore
@@ -2111,9 +2118,9 @@
 	 - https://github.com/joyent/node/blob/master/lib/path.js
 	 */
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -2145,7 +2152,7 @@
 	}
 	
 	function chainPromise(fns, arg, done) {
-	  var stopAtError = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
+	  var stopAtError = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 	
 	  fns = fns.filter(function (f) {
 	    return !!f;
@@ -2173,9 +2180,9 @@
 	exports.default = chainPromise;
 	module.exports = exports['default'];
 
-/***/ },
+/***/ }),
 /* 11 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -2242,9 +2249,9 @@
 	 CORS : http://www.nczonline.net/blog/2010/05/25/cross-domain-io-with-cross-origin-resource-sharing/
 	 */
 
-/***/ },
+/***/ }),
 /* 12 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -2252,7 +2259,7 @@
 	  value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /* eslint no-console:0 */
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /* eslint no-console:0 */
 	
 	var _utils = __webpack_require__(5);
 	
@@ -2588,9 +2595,9 @@
 	exports.default = XhrTransportBase;
 	module.exports = exports['default'];
 
-/***/ },
+/***/ }),
 /* 13 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -2605,9 +2612,9 @@
 	var NOT_FOUND_CODE = exports.NOT_FOUND_CODE = 404;
 	var NO_CONTENT_CODE2 = exports.NO_CONTENT_CODE2 = 1223;
 
-/***/ },
+/***/ }),
 /* 14 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -2631,9 +2638,9 @@
 	};
 	module.exports = exports['default'];
 
-/***/ },
+/***/ }),
 /* 15 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -2736,13 +2743,13 @@
 	exports.default = SubDomainTransport;
 	module.exports = exports['default'];
 
-/***/ },
+/***/ }),
 /* 16 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
 	var _utils = __webpack_require__(5);
 	
@@ -2866,8 +2873,8 @@
 	    });
 	  },
 	  _callback: function _callback(event, abort) {
-	    var script = this.script;
-	    var io = this.io;
+	    var script = this.script,
+	        io = this.io;
 	    // 防止重复调用,成功后 abort
 	
 	    if (!script) {
@@ -2889,9 +2896,9 @@
 	
 	_base2.default.setupTransport('script', ScriptTransport);
 
-/***/ },
+/***/ }),
 /* 17 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -2917,78 +2924,76 @@
 	  var c = io.config;
 	  var type = c.type;
 	  if (type[0] === 'jsonp') {
-	    (function () {
-	      // jsonp does not need contentType.
-	      // https://github.com/kissyteam/kissy/issues/394
-	      delete c.contentType;
-	      var response = void 0;
-	      var cJsonpCallbackName = c.jsonpCallbackName;
-	      var converters = void 0;
-	      var jsonpCallbackName = typeof cJsonpCallbackName === 'function' ? cJsonpCallbackName() : cJsonpCallbackName;
-	      var previous = window[jsonpCallbackName];
+	    // jsonp does not need contentType.
+	    // https://github.com/kissyteam/kissy/issues/394
+	    delete c.contentType;
+	    var response = void 0;
+	    var cJsonpCallbackName = c.jsonpCallbackName;
+	    var converters = void 0;
+	    var jsonpCallbackName = typeof cJsonpCallbackName === 'function' ? cJsonpCallbackName() : cJsonpCallbackName;
+	    var previous = window[jsonpCallbackName];
 	
-	      c.uri.query[c.jsonpCallback] = jsonpCallbackName;
+	    c.uri.query[c.jsonpCallback] = jsonpCallbackName;
 	
-	      // build temporary JSONP function
-	      window[jsonpCallbackName] = function () {
-	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	          args[_key] = arguments[_key];
+	    // build temporary JSONP function
+	    window[jsonpCallbackName] = function () {
+	      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	        args[_key] = arguments[_key];
+	      }
+	
+	      // 使用数组，区别：故意调用了 jsonpCallback(undefined) 与 根本没有调用
+	      // jsonp 返回了数组
+	      var r = args;
+	      if (args.length <= 1) {
+	        r = args[0];
+	      }
+	      // 先存在内存里, onload 后再读出来处理
+	      response = [r];
+	    };
+	
+	    // cleanup whether success or failure
+	    io.always(function () {
+	      window[jsonpCallbackName] = previous;
+	      if (previous === undefined) {
+	        try {
+	          delete window[jsonpCallbackName];
+	        } catch (ee) {
+	          // empty
 	        }
+	      } else if (response) {
+	        // after io success handler called
+	        // then call original existed jsonpcallback
+	        previous(response[0]);
+	      }
+	    });
 	
-	        // 使用数组，区别：故意调用了 jsonpCallback(undefined) 与 根本没有调用
-	        // jsonp 返回了数组
-	        var r = args;
-	        if (args.length <= 1) {
-	          r = args[0];
-	        }
-	        // 先存在内存里, onload 后再读出来处理
-	        response = [r];
-	      };
+	    converters = c.converters;
+	    converters.script = converters.script || {};
 	
-	      // cleanup whether success or failure
-	      io.always(function () {
-	        window[jsonpCallbackName] = previous;
-	        if (previous === undefined) {
-	          try {
-	            delete window[jsonpCallbackName];
-	          } catch (ee) {
-	            // empty
-	          }
-	        } else if (response) {
-	          // after io success handler called
-	          // then call original existed jsonpcallback
-	          previous(response[0]);
-	        }
-	      });
+	    // script -> jsonp ,jsonp need to see json not as script
+	    // if ie onload a 404/500 file or all browsers onload an invalid script
+	    // 404/invalid will be caught here
+	    // because response is undefined( jsonp callback is never called)
+	    // error throwed will be caught in conversion step
+	    // and will notify user by error callback
+	    converters.script.json = function () {
+	      if (!response) {
+	        // notify event on production mode
+	        throw new Error('not call jsonpCallback: ' + jsonpCallbackName);
+	      }
+	      return response[0];
+	    };
 	
-	      converters = c.converters;
-	      converters.script = converters.script || {};
-	
-	      // script -> jsonp ,jsonp need to see json not as script
-	      // if ie onload a 404/500 file or all browsers onload an invalid script
-	      // 404/invalid will be caught here
-	      // because response is undefined( jsonp callback is never called)
-	      // error throwed will be caught in conversion step
-	      // and will notify user by error callback
-	      converters.script.json = function () {
-	        if (!response) {
-	          // notify event on production mode
-	          throw new Error('not call jsonpCallback: ' + jsonpCallbackName);
-	        }
-	        return response[0];
-	      };
-	
-	      type.length = 2;
-	      // 利用 script transport 发送 script 请求
-	      type[0] = 'script';
-	      type[1] = 'json';
-	    })();
+	    type.length = 2;
+	    // 利用 script transport 发送 script 请求
+	    type[0] = 'script';
+	    type[1] = 'json';
 	  }
 	});
 
-/***/ },
+/***/ }),
 /* 18 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -3013,8 +3018,8 @@
 	var slice = Array.prototype.slice;
 	
 	_base2.default.addPreprocessor('start', function (e) {
-	  var _window = window;
-	  var FormData = _window.FormData;
+	  var _window = window,
+	      FormData = _window.FormData;
 	
 	  var io = e.io;
 	  var d = void 0;
@@ -3079,9 +3084,9 @@
 	  }
 	});
 
-/***/ },
+/***/ }),
 /* 19 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -3186,9 +3191,9 @@
 	
 	module.exports = FormSerializer;
 
-/***/ },
+/***/ }),
 /* 20 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -3491,9 +3496,9 @@
 	
 	_base2.default.setupTransport('iframe', IframeTransport);
 
-/***/ },
+/***/ }),
 /* 21 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -3572,20 +3577,18 @@
 	    }
 	
 	    if (!responseData) {
-	      (function () {
-	        var rawData = { text: text, xml: xml };
-	        // 看能否从 text xml 转换到合适数据，并设置起始类型为 text/xml
-	        ['text', 'xml'].forEach(function (prevType) {
-	          type0 = type[0];
-	          var converter = converts[prevType] && converts[prevType][type0];
-	          if (converter && rawData[prevType]) {
-	            type.unshift(prevType);
-	            responseData = prevType === 'text' ? text : xml;
-	            return false;
-	          }
-	          return undefined;
-	        });
-	      })();
+	      var rawData = { text: text, xml: xml };
+	      // 看能否从 text xml 转换到合适数据，并设置起始类型为 text/xml
+	      ['text', 'xml'].forEach(function (prevType) {
+	        type0 = type[0];
+	        var converter = converts[prevType] && converts[prevType][type0];
+	        if (converter && rawData[prevType]) {
+	          type.unshift(prevType);
+	          responseData = prevType === 'text' ? text : xml;
+	          return false;
+	        }
+	        return undefined;
+	      });
 	    }
 	  }
 	  var prevType = type[0];
@@ -3599,7 +3602,12 @@
 	    if (!converter) {
 	      throw new Error('no covert for ' + prevType + ' => ' + type0);
 	    }
-	    responseData = converter(responseData);
+	
+	    try {
+	      responseData = converter(responseData);
+	    } catch (e) {
+	      throw new Error('converter failed from data => ' + responseData);
+	    }
 	
 	    prevType = type0;
 	  }
@@ -3820,6 +3828,6 @@
 	  }
 	});
 
-/***/ }
+/***/ })
 /******/ ]);
 //# sourceMappingURL=common.js.map
