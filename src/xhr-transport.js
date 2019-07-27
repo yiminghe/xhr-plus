@@ -15,8 +15,11 @@ function XhrTransport(io) {
   const crossDomain = c.crossDomain;
   const useSubDomainProxy = c.useSubDomainProxy;
   this.io = io;
-  if (useSubDomainProxy && crossDomain &&
-    (!XhrTransportBase.supportCORS || useSubDomainProxy === 'force')) {
+  if (
+    useSubDomainProxy &&
+    crossDomain &&
+    (!XhrTransportBase.supportCORS || useSubDomainProxy === 'force')
+  ) {
     // 跨子域
     if (isSubDomain(c.uri.hostname)) {
       // force to not use sub domain transport

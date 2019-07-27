@@ -5,7 +5,7 @@ import FormSerializer from './form-serializer';
 
 const slice = Array.prototype.slice;
 
-IO.addPreprocessor('start', (e) => {
+IO.addPreprocessor('start', e => {
   const { FormData } = window;
   const io = e.io;
   let d;
@@ -30,7 +30,8 @@ IO.addPreprocessor('start', (e) => {
           break;
         }
         const selected = slice.call(input.files, 0);
-        files[input.getAttribute('name')] = selected.length > 1 ? selected : (selected[0] || null);
+        files[input.getAttribute('name')] =
+          selected.length > 1 ? selected : selected[0] || null;
       }
     }
 
@@ -46,7 +47,12 @@ IO.addPreprocessor('start', (e) => {
       // when FormData exists, only collect non-file type input
       formParam = FormSerializer.getFormData(form);
       if (c.hasContent) {
-        formParam = querystring.stringify(formParam, undefined, undefined, !c.traditional);
+        formParam = querystring.stringify(
+          formParam,
+          undefined,
+          undefined,
+          !c.traditional,
+        );
         if (data) {
           c.data += `&${formParam}`;
         } else {

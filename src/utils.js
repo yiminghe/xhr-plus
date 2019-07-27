@@ -9,7 +9,9 @@ const RE_NOT_WHITESPACE = /\S/;
 function isValidParamValue(val) {
   const t = typeof val;
   // If the type of val is null, undefined, number, string, boolean, return TRUE.
-  return val === null || val === undefined || (t !== 'object' && t !== 'function');
+  return (
+    val === null || val === undefined || (t !== 'object' && t !== 'function')
+  );
 }
 
 function isObject(obj) {
@@ -40,9 +42,12 @@ function _mix(p, r, s, ov, wl, deep, cache, structured) {
       } else {
         // 目标值为对象或数组，直接 mix
         // 否则 新建一个和源值类型一样的空数组/对象，递归 mix
-        const clone = target && (Array.isArray(target) || isObject(target)) ?
-          target :
-          (Array.isArray(src) ? [] : {});
+        const clone =
+          target && (Array.isArray(target) || isObject(target))
+            ? target
+            : Array.isArray(src)
+            ? []
+            : {};
         r[p] = clone;
         mixInternal(clone, src, ov, wl, true, cache, structured);
       }
@@ -113,7 +118,7 @@ function cloneInternal(input, f, memory, structured) {
       // to output (the destination object) to memory.
       // 做标记
       // stamp can not be
-      input[CLONE_MARKER] = (stamp = utils.guid('c'));
+      input[CLONE_MARKER] = stamp = utils.guid('c');
       // 存储源对象以及克隆后的对象
       memory[stamp] = { destination, input };
     }
@@ -132,8 +137,10 @@ function cloneInternal(input, f, memory, structured) {
     }
   } else if (isObject(input)) {
     for (k in input) {
-      if (k !== CLONE_MARKER &&
-        (!f || (f.call(input, input[k], k, input) !== false))) {
+      if (
+        k !== CLONE_MARKER &&
+        (!f || f.call(input, input[k], k, input) !== false)
+      ) {
         destination[k] = cloneInternal(input[k], f, memory, structured);
       }
     }
@@ -217,12 +224,17 @@ const utils = {
     // Standard
     if (window.DOMParser) {
       xml = new DOMParser().parseFromString(data, 'text/xml');
-    } else { // IE
+    } else {
+      // IE
       xml = new window.ActiveXObject('Microsoft.XMLDOM');
       xml.async = false;
       xml.loadXML(data);
     }
-    if (!xml || !xml.documentElement || xml.getElementsByTagName('parsererror').length) {
+    if (
+      !xml ||
+      !xml.documentElement ||
+      xml.getElementsByTagName('parsererror').length
+    ) {
       throw new Error(`Invalid XML: ${data}`);
     }
     return xml;
@@ -236,7 +248,7 @@ const utils = {
       ov = ov.overwrite;
     }
 
-    if (wl && (typeof wl !== 'function')) {
+    if (wl && typeof wl !== 'function') {
       const originalWl = wl;
       wl = (name, val) => {
         return originalWl.indexOf(name) !== -1 ? val : undefined;
@@ -289,7 +301,7 @@ const utils = {
     }
     const ret = cloneInternal(input, filter, memory, structured);
     if (structured) {
-      utils.each(memory, (v_) => {
+      utils.each(memory, v_ => {
         // 清理在源对象上做的标记
         const v = v_.input;
         if (v[CLONE_MARKER]) {
@@ -317,7 +329,8 @@ const utils = {
     const lengthType = typeof o.length;
     const oType = typeof o;
     // The strings and functions also have 'length'
-    if (lengthType !== 'number' ||
+    if (
+      lengthType !== 'number' ||
       // select element
       // https://github.com/kissyteam/kissy/issues/537
       typeof o.nodeName === 'string' ||
@@ -325,7 +338,8 @@ const utils = {
       (o !== null && o === o.window) ||
       oType === 'string' ||
       // https://github.com/ariya/phantomjs/issues/11478
-      (oType === 'function' && !('item' in o && lengthType === 'number'))) {
+      (oType === 'function' && !('item' in o && lengthType === 'number'))
+    ) {
       return [o];
     }
     const ret = [];
@@ -377,7 +391,7 @@ const utils = {
     if (!possibleEscapeHtmlReg.test(str)) {
       return str;
     }
-    return str.replace(escapeHtmlReg, (m) => {
+    return str.replace(escapeHtmlReg, m => {
       return reverseEntities[m];
     });
   },
@@ -407,8 +421,7 @@ const utils = {
   },
 
   extend(Child, Parent, members) {
-    function Noop() {
-    }
+    function Noop() {}
 
     Noop.prototype = Parent.prototype;
     Child.prototype = new Noop();
@@ -422,14 +435,13 @@ const utils = {
       if (window.execScript) {
         window.execScript(data);
       } else {
-        ((d) => {
+        (d => {
           window.eval.call(window, d);
         })(data);
       }
     }
   },
-  noop() {
-  },
+  noop() {},
   isEmptyObject(obj) {
     return !obj || !Object.keys(obj).length;
   },
@@ -466,8 +478,12 @@ const utils = {
           for (i = 0, len = val.length; i < len; ++i) {
             v = val[i];
             if (isValidParamValue(v)) {
-              buf.push(key, (serializeArray && (originalKey.slice(0 - 2) !== '[]') ?
-                encodeURIComponent('[]') : EMPTY));
+              buf.push(
+                key,
+                serializeArray && originalKey.slice(0 - 2) !== '[]'
+                  ? encodeURIComponent('[]')
+                  : EMPTY,
+              );
               if (v !== undefined) {
                 buf.push(eq, encodeURIComponent(v + EMPTY));
               }
@@ -484,7 +500,7 @@ const utils = {
     if (Array.isArray(obj)) {
       obj.forEach(callback);
     } else {
-      Object.keys(obj).forEach((k) => {
+      Object.keys(obj).forEach(k => {
         callback(obj[k], k);
       });
     }
@@ -494,16 +510,20 @@ const utils = {
 function numberify(s) {
   let c = 0;
   // convert '1.2.3.4' to 1.234
-  return parseFloat(s.replace(/\./g, () => {
-    return (c++ === 0) ? '.' : '';
-  }));
+  return parseFloat(
+    s.replace(/\./g, () => {
+      return c++ === 0 ? '.' : '';
+    }),
+  );
 }
 
 let m;
 let v;
 const ua = (window.navigator || {}).userAgent || '';
-if ((m = ua.match(/MSIE ([^;]*)|Trident.*; rv(?:\s|:)?([0-9.]+)/)) &&
-  (v = (m[1] || m[2]))) {
+if (
+  (m = ua.match(/MSIE ([^;]*)|Trident.*; rv(?:\s|:)?([0-9.]+)/)) &&
+  (v = m[1] || m[2])
+) {
   utils.ie = numberify(v);
   utils.ieMode = document.documentMode || utils.ie;
 }

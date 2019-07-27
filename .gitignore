@@ -25,3 +25,5 @@ lib
 coverage
 typings/
 !tests/index.js
+/pkg/
+yarn.lock

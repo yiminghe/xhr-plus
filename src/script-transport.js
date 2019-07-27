@@ -54,7 +54,7 @@ function getScript(uri, success, charset) {
   callbacks.node = node;
 
   function end(callbackIndex) {
-    utils.each(jsOnLoadCallbacks[uri], (callback) => {
+    utils.each(jsOnLoadCallbacks[uri], callback => {
       const fn = callback[callbackIndex];
       if (fn) {
         fn.call(node);
@@ -65,9 +65,7 @@ function getScript(uri, success, charset) {
 
   function onload() {
     const readyState = node.readyState;
-    if (!readyState ||
-      readyState === 'loaded' ||
-      readyState === 'complete') {
+    if (!readyState || readyState === 'loaded' || readyState === 'complete') {
       node.onreadystatechange = node.onload = null;
       end(0);
     }
@@ -80,7 +78,10 @@ function getScript(uri, success, charset) {
   };
 
   // can use js in head
-  document.documentElement.insertBefore(node, document.documentElement.firstChild);
+  document.documentElement.insertBefore(
+    node,
+    document.documentElement.firstChild,
+  );
   return node;
 }
 

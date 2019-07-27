@@ -17,7 +17,7 @@ const iframeConverter = utils.clone(IO.getConfig().converters.text);
 // </body>
 // text or html type is of same effect.
 // same as normal ajax or html5 FileData
-iframeConverter.json = (str) => {
+iframeConverter.json = str => {
   return JSON.parse(utils.unEscapeHtml(str));
 };
 
@@ -50,8 +50,7 @@ IO.ajaxSetup({
 function isCustomDomain() {
   const domain = document.domain;
   const hostname = location.hostname;
-  return domain !== hostname &&
-    domain !== (`[${hostname}]`);	// IPv6 IP support
+  return domain !== hostname && domain !== `[${hostname}]`; // IPv6 IP support
 }
 
 /**
@@ -63,13 +62,11 @@ function isCustomDomain() {
 function getEmptyIframeSrc(win) {
   if (utils.ie && isCustomDomain()) {
     return `javascript:void(function(){
-${
-      encodeURIComponent(
-        `document.open();\
+${encodeURIComponent(
+  `document.open();\
 document.domain="${win.document.domain}";\
-document.close();`
-      )
-      }
+document.close();`,
+)}
         }())`;
   }
   return '';
@@ -79,7 +76,7 @@ function createIframe(xhr) {
   const id = utils.guid('io-iframe');
   // empty src, so no history
   const src = getEmptyIframeSrc();
-  const iframe = xhr.iframe = document.createElement('iframe');
+  const iframe = (xhr.iframe = document.createElement('iframe'));
   iframe.src = src;
   iframe.name = iframe.id = id;
   iframe.style.position = 'absolute';
@@ -117,7 +114,7 @@ function addDataToForm(query, form, serializeArray) {
 
 function removeFieldsFromData(fields) {
   if (fields) {
-    fields.forEach((f) => {
+    fields.forEach(f => {
       f.parentNode.removeChild(f);
     });
   }

@@ -5,7 +5,12 @@ import querystring from 'modulex-querystring';
 import urlUtils from 'modulex-url';
 import IO from './base';
 import assign from 'object-assign';
-import { OK_CODE, NO_CONTENT_CODE, NOT_FOUND_CODE, NO_CONTENT_CODE2 } from './constants';
+import {
+  OK_CODE,
+  NO_CONTENT_CODE,
+  NOT_FOUND_CODE,
+  NO_CONTENT_CODE2,
+} from './constants';
 import sendMixin from './send-mixin';
 
 // http://msdn.microsoft.com/en-us/library/cc288060(v=vs.85).aspx
@@ -15,7 +20,6 @@ const XhrTransportBase = {
 };
 const lastModifiedCached = {};
 const eTagCached = {};
-
 
 IO.__lastModifiedCached = lastModifiedCached;
 IO.__eTagCached = eTagCached;
@@ -29,8 +33,9 @@ function createStandardXHR(_, refWin) {
   return undefined;
 }
 
-const supportCORS = XhrTransportBase.supportCORS =
-  typeof window !== undefined && ('withCredentials' in (createStandardXHR() || {}));
+const supportCORS = (XhrTransportBase.supportCORS =
+  typeof window !== undefined &&
+  'withCredentials' in (createStandardXHR() || {}));
 
 function createActiveXHR(_, refWin) {
   try {
@@ -41,22 +46,25 @@ function createActiveXHR(_, refWin) {
   return undefined;
 }
 
-XhrTransportBase.nativeXhr = typeof window !== undefined && window.ActiveXObject ?
-  (crossDomain, refWin) => {
-    // consider ie10
-    if (!supportCORS && crossDomain && XDomainRequest_) {
-      return new XDomainRequest_();
-    }
-    // ie7 XMLHttpRequest 不能访问本地文件
-    return !IO.isLocal && createStandardXHR(crossDomain, refWin) ||
-      createActiveXHR(crossDomain, refWin);
-  } : createStandardXHR;
-
+XhrTransportBase.nativeXhr =
+  typeof window !== undefined && window.ActiveXObject
+    ? (crossDomain, refWin) => {
+        // consider ie10
+        if (!supportCORS && crossDomain && XDomainRequest_) {
+          return new XDomainRequest_();
+        }
+        // ie7 XMLHttpRequest 不能访问本地文件
+        return (
+          (!IO.isLocal && createStandardXHR(crossDomain, refWin)) ||
+          createActiveXHR(crossDomain, refWin)
+        );
+      }
+    : createStandardXHR;
 
 XhrTransportBase.XDomainRequest_ = XDomainRequest_;
 
 function isInstanceOfXDomainRequest(xhr) {
-  return XDomainRequest_ && (xhr instanceof XDomainRequest_);
+  return XDomainRequest_ && xhr instanceof XDomainRequest_;
 }
 
 function getIfModifiedKey(c) {
@@ -157,7 +165,7 @@ assign(XhrTransportBase.proto, sendMixin, {
       }
     }
 
-    let sendContent = c.hasContent && c.data || null;
+    let sendContent = (c.hasContent && c.data) || null;
 
     // support html5 file upload api
     if (files) {
@@ -170,7 +178,7 @@ assign(XhrTransportBase.proto, sendMixin, {
       sendContent = new FormData();
       utils.each(data, (vs, k) => {
         if (Array.isArray(vs)) {
-          utils.each(vs, (v) => {
+          utils.each(vs, v => {
             sendContent.append(k + (c.traditional ? '' : '[]'), v);
           });
         } else {
@@ -263,7 +271,7 @@ assign(XhrTransportBase.proto, sendMixin, {
             io.responseXML = xml;
           }
 
-          let text = io.responseText = nativeXhr.responseText;
+          let text = (io.responseText = nativeXhr.responseText);
 
           // same with old-ie iframe-upload
           if (c.files && text) {

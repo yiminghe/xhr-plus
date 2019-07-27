@@ -46,7 +46,10 @@ assign(SubDomainTransport.prototype, XhrTransportBase.proto, {
 
     if (iframeDesc && iframeDesc.ready) {
       this.window = iframeDesc.iframe.contentWindow;
-      this.nativeXhr = XhrTransportBase.nativeXhr(0, iframeDesc.iframe.contentWindow);
+      this.nativeXhr = XhrTransportBase.nativeXhr(
+        0,
+        iframeDesc.iframe.contentWindow,
+      );
       if (this.nativeXhr) {
         this.sendInternal();
       } else {

@@ -1,6 +1,6 @@
 {
   "name": "xhr-plus",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "xhr-plus",
   "keywords": [
     "XMLHttpRequest plus",
@@ -18,16 +18,18 @@
     "lib"
   ],
   "license": "MIT",
-  "main": "./lib/index",
   "config": {
     "port": 8000
   },
   "scripts": {
+    "build": "pack build",
+    "prettier": "prettier --write \"{src,stories}/**/*.{js,tsx}\"",
+    "pub": "npm run build && npm publish pkg",
+    "deploy": "storybook-to-ghpages",
+    "lint-staged": "lint-staged",
     "watch-tsc": "rc-tools run watch-tsc",
-    "build": "rc-tools run build",
     "gh-pages": "rc-tools run gh-pages",
     "start": "node server",
-    "pub": "rc-tools run pub",
     "lint": "rc-tools run lint",
     "karma": "rc-tools run karma",
     "saucelabs": "rc-tools run saucelabs",
@@ -35,23 +37,51 @@
     "chrome-test": "rc-tools run chrome-test",
     "coverage": "rc-tools run coverage"
   },
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-standard-pkg",
+        {
+          "exclude": [
+            "__tests__/**/*"
+          ]
+        }
+      ],
+      [
+        "@pika/plugin-build-web"
+      ]
+    ]
+  },
   "dependencies": {
     "modulex-querystring": "~1.0.5",
     "modulex-url": "~1.0.6",
     "object-assign": "4.x"
   },
   "devDependencies": {
-    "es6-promise": "3.x",
+    "@babel/preset-env": "^7.5.5",
+    "@pika/plugin-build-types": "^0.5.1",
+    "@pika/plugin-build-web": "^0.5.1",
+    "@pika/plugin-standard-pkg": "^0.5.1",
+    "@pika/types": "^0.5.1",
     "co": "~4.6.0",
+    "es6-promise": "3.x",
     "expect.js": "0.3.x",
     "jquery": "~1.12.4",
     "koa": "~1.2.1",
     "koa-body": "~1.4.0",
     "koa-compose": "~2.4.0",
+    "lint-staged": "^9.2.1",
     "pre-commit": "1.x",
+    "prettier": "^1.18.2",
     "rc-tools": "5.x"
   },
+  "lint-staged": {
+    "*.{tsx,js,jsx,ts}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "pre-commit": [
-    "lint"
+    "lint-staged"
   ]
 }

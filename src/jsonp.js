@@ -7,7 +7,7 @@ IO.ajaxSetup({
     return utils.guid('jsonp');
   },
 });
-IO.addPreprocessor('start', (e) => {
+IO.addPreprocessor('start', e => {
   const io = e.io;
   const c = io.config;
   const type = c.type;
@@ -18,9 +18,10 @@ IO.addPreprocessor('start', (e) => {
     let response;
     const cJsonpCallbackName = c.jsonpCallbackName;
     let converters;
-    const jsonpCallbackName = typeof cJsonpCallbackName === 'function' ?
-      cJsonpCallbackName() :
-      cJsonpCallbackName;
+    const jsonpCallbackName =
+      typeof cJsonpCallbackName === 'function'
+        ? cJsonpCallbackName()
+        : cJsonpCallbackName;
     const previous = window[jsonpCallbackName];
 
     c.uri.query[c.jsonpCallback] = jsonpCallbackName;

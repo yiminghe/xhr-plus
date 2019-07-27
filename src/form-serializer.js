@@ -30,37 +30,41 @@ const FormSerializer = {
    */
   serialize(forms, serializeArray) {
     // 名值键值对序列化,数组元素名字前不加 []
-    return querystring.stringify(FormSerializer.getFormData(forms), undefined, undefined,
-      serializeArray || false);
+    return querystring.stringify(
+      FormSerializer.getFormData(forms),
+      undefined,
+      undefined,
+      serializeArray || false,
+    );
   },
 
   getFormData(forms) {
     let elements = [];
     const data = {};
-    utils.each(forms, (el) => {
+    utils.each(forms, el => {
       // form 取其表单元素集合
       // 其他直接取自身
       const subs = el.elements ? elementsToArray(el.elements) : [el];
       elements.push.apply(elements, subs);
     });
     // 对表单元素进行过滤，具备有效值的才保留
-    elements = elements.filter((el) => {
+    elements = elements.filter(el => {
       // 有名字
-      return el.name &&
+      return (
+        el.name &&
         // 不被禁用
         !el.disabled &&
-        (
-          // radio,checkbox 被选择了
-          el.checked ||
+        // radio,checkbox 被选择了
+        (el.checked ||
           // select 或者 textarea
           rselectTextarea.test(el.nodeName) ||
           // input 类型
-          rinput.test(el.type)
-        );
+          rinput.test(el.type))
+      );
 
       // 这样子才取值
     });
-    elements.forEach((el) => {
+    elements.forEach(el => {
       // TODO, select multiple, welcome pr
       let val = el.value;
       let vs;
@@ -93,4 +97,4 @@ const FormSerializer = {
   },
 };
 
-module.exports = FormSerializer;
+export default FormSerializer;
