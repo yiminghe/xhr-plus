@@ -1,6 +1,6 @@
 {
   "name": "xhr-plus",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "xhr-plus",
   "keywords": [
     "XMLHttpRequest plus",
@@ -49,6 +49,9 @@
       ],
       [
         "@pika/plugin-build-web"
+      ],
+      [
+        "@pika/plugin-build-node"
       ]
     ]
   },
@@ -58,6 +61,7 @@
     "object-assign": "4.x"
   },
   "devDependencies": {
+    "@pika/plugin-build-node": "^0.5.1",
     "@babel/preset-env": "^7.5.5",
     "@pika/plugin-build-types": "^0.5.1",
     "@pika/plugin-build-web": "^0.5.1",
