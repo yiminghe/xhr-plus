@@ -70,7 +70,7 @@
     "co": "~4.6.0",
     "es6-promise": "3.x",
     "expect.js": "0.3.x",
-    "jquery": "~1.12.4",
+    "jquery": "~3.4.1",
     "koa": "~1.2.1",
     "koa-body": "~1.4.0",
     "koa-compose": "~2.4.0",
